@@ -1,9 +1,10 @@
+
 name: Facebook Auto Bot
 
 on:
-  workflow_dispatch: # Yeh aapko GitHub par ek "Run workflow" ka button dega taake aap manually chala sakein
+  workflow_dispatch: 
   schedule:
-    - cron: '0 5 * * *' # Yeh har roz subah 5:00 AM UTC (Pakistan Time: 10:00 AM) ko auto-run hoga
+    - cron: '0 5 * * *' 
 
 jobs:
   run-script:
@@ -24,6 +25,51 @@ jobs:
 
       - name: Bot run kar raha hai!
         env:
-          # Yahan hum GitHub Secret wali cookies ko as environment variable pass kar rahe hain
           FB_COOKIES: ${{ secrets.FB_COOKIES }} 
         run: python main.py
+
+      # --- YEH NAYA STEP HAI SABOOT DOWNLOAD KARNE KE LIYE ---
+      - name: Upload Saboot (Screenshots)
+        uses: actions/upload-artifact@v4
+        with:
+          name: FB-Login-Proof
+          path: screenshots/
+
+
+
+
+
+
+
+
+
+
+# name: Facebook Auto Bot
+
+# on:
+#   workflow_dispatch: # Yeh aapko GitHub par ek "Run workflow" ka button dega taake aap manually chala sakein
+#   schedule:
+#     - cron: '0 5 * * *' # Yeh har roz subah 5:00 AM UTC (Pakistan Time: 10:00 AM) ko auto-run hoga
+
+# jobs:
+#   run-script:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Code download kar raha hai...
+#         uses: actions/checkout@v4
+
+#       - name: Python setup kar raha hai...
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.12' 
+
+#       - name: Selenium install kar raha hai...
+#         run: |
+#           pip install selenium
+
+#       - name: Bot run kar raha hai!
+#         env:
+#           # Yahan hum GitHub Secret wali cookies ko as environment variable pass kar rahe hain
+#           FB_COOKIES: ${{ secrets.FB_COOKIES }} 
+#         run: python main.py
