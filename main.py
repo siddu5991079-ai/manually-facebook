@@ -17,12 +17,21 @@ def login_and_post():
 
     cookies = json.loads(cookies_json)
 
-    # ⚙️ BROWSER SETUP FOR Xvfb (Virtual Screen)
+    # ==========================================
+    # 🛡️ BROWSER SETUP (STEALTH & VIRTUAL SCREEN)
+    # ==========================================
     co = ChromiumOptions()
     co.set_argument('--no-sandbox')
     co.set_argument('--disable-dev-shm-usage')
     co.set_argument('--window-size=1920,1080')
     co.set_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+    
+    # 🛑 YEH NAYE FLAGS HAIN JO WARNINGS CHUPAYENGE 🛑
+    co.set_argument('--test-type') # --no-sandbox ki warning gaib karega
+    co.set_argument('--disable-infobars') # Top bars hide karega
+    co.set_argument('--disable-blink-features=AutomationControlled') # Bot detection se bachayega
+    co.set_argument('--password-store=basic')
+    co.set_argument('--disable-notifications') 
     
     print("🚀 Script Start... Browser khul raha hai...")
     page = ChromiumPage(co)
@@ -153,7 +162,6 @@ def login_and_post():
     finally:
         print("\nBrowser band kar rahe hain...")
         page.quit()
-        # Ensure Chrome processes are dead (Linux command)
         os.system("pkill chrome")
         print("✅ Browser successfully khatam ho gaya!")
 
