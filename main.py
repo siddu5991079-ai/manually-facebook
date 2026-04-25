@@ -3,11 +3,7 @@ import os
 import json
 import time
 import random
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from DrissionPage import ChromiumPage, ChromiumOptions
 
 messages = [
     "RCB vs GT live match HD mein dekhne ke liye link check karein! 🏏🔥",
@@ -15,9 +11,6 @@ messages = [
 ]
 
 def login_and_post():
-    # Screenshots folder setup
-    os.makedirs("screenshots", exist_ok=True)
-
     cookies_json = os.environ.get('FB_COOKIES')
     if not cookies_json:
         print("❌ Error: FB_COOKIES secret nahi mila!")
@@ -25,182 +18,147 @@ def login_and_post():
 
     cookies = json.loads(cookies_json)
 
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new") 
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
-    prefs = {"profile.default_content_setting_values.notifications": 2}
-    chrome_options.add_experimental_option("prefs", prefs)
-
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.set_window_size(1920, 1080)
-    wait = WebDriverWait(driver, 10)
+    # ⚙️ BROWSER SETUP FOR Xvfb (Virtual Screen)
+    co = ChromiumOptions()
+    co.set_argument('--no-sandbox')
+    co.set_argument('--disable-dev-shm-usage')
+    co.set_argument('--window-size=1920,1080')
+    co.set_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+    # NOTE: Hum yahan '--headless' flag use NAHI kar rahe. 
+    # GitHub Action isko Xvfb ki virtual screen par kholay ga, jo video me record hogi.
+    
+    print("🚀 Script Start... Browser khul raha hai...")
+    page = ChromiumPage(co)
 
     try:
         # ==========================================
-        # LOGIN PROCESS (Already tested & working)
+        # LOGIN PROCESS
         # ==========================================
         print("🌐 Facebook par ja rahe hain...")
-        driver.get("https://www.facebook.com/404") 
+        page.get("https://www.facebook.com/404") 
         time.sleep(3)
 
+        print("🍪 Cookies inject kar rahe hain...")
         for cookie in cookies:
             if 'facebook.com' in cookie.get('domain', ''):
-                driver.add_cookie({
+                # DrissionPage requires standard cookie format
+                cookie_dict = {
                     'name': cookie['name'],
                     'value': cookie['value'],
                     'domain': cookie['domain'],
-                    'path': cookie['path']
-                })
+                    'path': cookie.get('path', '/')
+                }
+                page.set.cookies(cookie_dict)
 
-        driver.get("https://www.facebook.com/")
+        page.get("https://www.facebook.com/")
         time.sleep(6)
 
-        if "log in" in driver.title.lower() or "login" in driver.title.lower():
-            print("❌ Login Failed!")
-            driver.save_screenshot("screenshots/0_Login_Failed.png")
+        if "log in" in page.title.lower() or "login" in page.title.lower():
+            print("❌ Login Failed! Cookies expire ho chuki hain.")
             return
         
         print("✅ Login Successful! Posting start kar rahe hain...")
-        driver.save_screenshot("screenshots/0_Login_Success.png")
 
-        # Image path setup for GitHub Server (Requires '1.png' in the repo)
         image_path = os.path.abspath("1.png")
         if not os.path.exists(image_path):
-            print("⚠️ Tasveer '1.png' repository mein nahi mili! Isko upload zaroor karein.")
+            print("⚠️ Tasveer '1.png' repository mein nahi mili! Text post ho jayegi.")
 
         # ==========================================
-        # STEP 1: CREATE POST POPUP KHOLNA
+        # STEP 1: CREATE POST POPUP
         # ==========================================
-        print("\n▶️ STEP 1: Post box dhoond rahe hain...")
-        driver.save_screenshot("screenshots/Step1_Start.png")
-        try:
-            create_post_btn = wait.until(EC.presence_of_element_located((By.XPATH, '//div[contains(@aria-label, "What\'s on your mind") or contains(@aria-label, "Create a post")]')))
-            driver.execute_script("arguments[0].click();", create_post_btn) # JS Click to avoid interception
+        print("▶️ STEP 1: Post box dhoond rahe hain...")
+        create_post_btn = page.ele('xpath://div[contains(@aria-label, "What\'s on your mind") or contains(@aria-label, "Create a post")]', timeout=10)
+        if create_post_btn:
+            create_post_btn.click(by_js=True)
             time.sleep(4)
-        except Exception as e:
+        else:
             print("❌ 'What's on your mind?' button nahi mila.")
-        driver.save_screenshot("screenshots/Step1_End.png")
 
         # ==========================================
         # STEP 2: TEXT TYPE KARNA
         # ==========================================
-        print("\n▶️ STEP 2: Text box dhoond rahe hain...")
-        driver.save_screenshot("screenshots/Step2_Start.png")
-        try:
-            text_box = wait.until(EC.presence_of_element_located((By.XPATH, '//div[@role="dialog"]//div[@role="textbox" and @contenteditable="true"]')))
+        print("▶️ STEP 2: Text box dhoond rahe hain...")
+        text_box = page.ele('xpath://div[@role="dialog"]//div[@role="textbox" and @contenteditable="true"]', timeout=5)
+        if text_box:
             text = random.choice(messages)
             hashtags = " #RCBvGT #CricketLive"
             full_text = text + hashtags
             print(f"Text Type Kar Rahe Hain: {full_text}")
-            text_box.send_keys(full_text)
+            text_box.input(full_text)
             time.sleep(3)
-        except Exception as e:
-            print("❌ Text box popup mein nahi mila.")
-        driver.save_screenshot("screenshots/Step2_End.png")
 
         # ==========================================
-        # STEP 3: IMAGE UPLOAD KARNI HAI
+        # STEP 3: IMAGE UPLOAD
         # ==========================================
-        print("\n▶️ STEP 3: Photo/Video option dhoond rahe hain...")
-        driver.save_screenshot("screenshots/Step3_Start.png")
-        try:
-            photo_icon = wait.until(EC.presence_of_element_located((By.XPATH, '//div[@role="dialog"]//div[@aria-label="Photo/video"]')))
-            driver.execute_script("arguments[0].click();", photo_icon)
+        print("▶️ STEP 3: Photo/Video option dhoond rahe hain...")
+        photo_icon = page.ele('xpath://div[@role="dialog"]//div[@aria-label="Photo/video"]', timeout=5)
+        if photo_icon:
+            photo_icon.click(by_js=True)
             time.sleep(2)
             
             if os.path.exists(image_path):
-                file_input = driver.find_element(By.XPATH, '//div[@role="dialog"]//input[@type="file"]')
-                print("Tasveer upload ho rahi hai...")
-                file_input.send_keys(image_path) # Selenium file upload
-                time.sleep(6)
-        except Exception as e:
-            print("⚠️ File input ya photo icon nahi mila.")
-        driver.save_screenshot("screenshots/Step3_End.png")
+                file_input = page.ele('xpath://div[@role="dialog"]//input[@type="file"]')
+                if file_input:
+                    print("Tasveer upload ho rahi hai...")
+                    file_input.input(image_path)
+                    time.sleep(6)
 
         # ==========================================
-        # STEP 4: NEXT BUTTON DABANA
+        # STEP 4: NEXT BUTTON
         # ==========================================
-        print("\n▶️ STEP 4: Next button dhoond rahe hain...")
-        driver.save_screenshot("screenshots/Step4_Start.png")
-        try:
-            next_btn = driver.find_element(By.CSS_SELECTOR, 'div[aria-label="Next"][role="button"]')
-            driver.execute_script("arguments[0].click();", next_btn)
+        print("▶️ STEP 4: Next button dhoond rahe hain...")
+        next_btn = page.ele('css:div[aria-label="Next"][role="button"]', timeout=3)
+        if next_btn:
+            next_btn.click(by_js=True)
             print("✅ 'Next' button daba diya.")
             time.sleep(4)
-        except Exception as e:
-            print("❌ Next button nahi mila (Shayad direct Post button aa gaya ho).")
-        driver.save_screenshot("screenshots/Step4_End.png")
 
         # ==========================================
-        # STEP 4.5: POST BUTTON YA EARLY POPUP CLOSE 
+        # STEP 4.5: POST BUTTON / EARLY POPUP
         # ==========================================
-        print("\n▶️ STEP 4.5: Post button check kar rahe hain...")
-        driver.save_screenshot("screenshots/Step4.5_Start.png")
-        try:
-            post_btn = driver.find_elements(By.XPATH, '//div[@aria-label="Post" and @role="button"]')
-            if not post_btn:
-                post_btn = driver.find_elements(By.XPATH, '//span[text()="Post"]')
-            
-            if post_btn:
-                driver.execute_script("arguments[0].click();", post_btn[0])
-                print("✅ 'Post' button daba diya.")
-            else:
-                print("⚠️ 'Post' nahi mila! Shayad popup aagaya hai.")
-                close_early = driver.find_elements(By.CSS_SELECTOR, 'div[aria-label="Close"][role="button"]')
-                if close_early:
-                    driver.execute_script("arguments[0].click();", close_early[0])
-                    print("✅ Pehla Popup 'Close' kar diya.")
-        except Exception as e:
-            pass
-        driver.save_screenshot("screenshots/Step4.5_End.png")
+        print("▶️ STEP 4.5: Post button check kar rahe hain...")
+        post_btn = page.ele('xpath://div[@aria-label="Post" and @role="button"]', timeout=3) or page.ele('xpath://span[text()="Post"]', timeout=2)
+        if post_btn:
+            post_btn.click(by_js=True)
+            print("✅ 'Post' button daba diya.")
+        else:
+            print("⚠️ 'Post' nahi mila! Shayad popup aagaya hai.")
+            close_early = page.ele('css:div[aria-label="Close"][role="button"]', timeout=3)
+            if close_early:
+                close_early.click(by_js=True)
 
         # ==========================================
         # STEP 4.8: ZIDDI POPUP HUNTER
         # ==========================================
-        print("\n▶️ STEP 4.8: Ab 8 seconds wait karke 2 dafa annoying popups check karenge...")
-        driver.save_screenshot("screenshots/Step4.8_Start.png")
+        print("▶️ STEP 4.8: Ziddi popups check kar rahe hain...")
         for i in range(2):
             time.sleep(8) 
-            print(f"🔍 Check {i+1}/2: Popup 'Close' button dhoond rahe hain...")
-            try:
-                popup_close_btn = driver.find_elements(By.CSS_SELECTOR, 'div[aria-label="Close"][role="button"]')
-                if popup_close_btn:
-                    driver.execute_script("arguments[0].click();", popup_close_btn[0])
-                    print(f"✅ BINGO! Popup pakra gaya aur attempt {i+1} mein uda diya.")
-                else:
-                    print(f"☑️ Rasta saaf hai. Koi popup nahi mila.")
-            except:
-                pass
-        driver.save_screenshot("screenshots/Step4.8_End.png")
+            popup_close_btn = page.ele('css:div[aria-label="Close"][role="button"]', timeout=3)
+            if popup_close_btn:
+                popup_close_btn.click(by_js=True)
+                print(f"✅ BINGO! Popup uda diya attempt {i+1} mein.")
 
         # ==========================================
         # STEP 5: FINAL "SHARE NOW" BUTTON
         # ==========================================
-        print("\n▶️ STEP 5: Final Share button dhoond rahe hain...")
-        driver.save_screenshot("screenshots/Step5_Start.png")
-        try:
-            share_now_btn = driver.find_elements(By.CSS_SELECTOR, 'div[aria-label="Share now"][role="button"]')
-            if not share_now_btn:
-                share_now_btn = driver.find_elements(By.XPATH, '//span[text()="Share now" or text()="Publish" or text()="Share"]')
-
-            if share_now_btn:
-                driver.execute_script("arguments[0].click();", share_now_btn[0])
-                print("✅ 'Share now' button daba diya.")
-                time.sleep(8)
-                print("🎉 BINGO! Facebook Post 100% Successful.")
-            else:
-                print("⚠️ Final Share button nahi mila (Shayad post pehle hi publish ho chuka hai).")
-        except Exception as e:
-            pass
-        driver.save_screenshot("screenshots/Step5_End.png")
+        print("▶️ STEP 5: Final Share button dhoond rahe hain...")
+        share_now_btn = page.ele('css:div[aria-label="Share now"][role="button"]', timeout=3) or page.ele('xpath://span[text()="Share now" or text()="Publish" or text()="Share"]', timeout=2)
+        if share_now_btn:
+            share_now_btn.click(by_js=True)
+            print("✅ 'Share now' button daba diya.")
+            time.sleep(8)
+            print("🎉 BINGO! Facebook Post 100% Successful.")
+        
+        # Result show karne ke liye thora rukna zaroori hai taake video mein capture ho
+        time.sleep(5) 
 
     except Exception as e:
         print(f"⚠️ HOUSTON, WE HAVE A PROBLEM: {e}")
     finally:
-        print("\nScript ka kaam khatam ho gaya. Browser band kar rahe hain...")
-        driver.quit()
+        print("\nBrowser band kar rahe hain...")
+        page.quit()
+        # Ensure Chrome processes are dead (Linux command)
+        os.system("pkill chrome")
         print("✅ Browser successfully khatam ho gaya!")
 
 if __name__ == "__main__":
