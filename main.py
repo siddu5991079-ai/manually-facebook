@@ -1,4 +1,3 @@
-
 import os
 import json
 import time
@@ -24,8 +23,6 @@ def login_and_post():
     co.set_argument('--disable-dev-shm-usage')
     co.set_argument('--window-size=1920,1080')
     co.set_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
-    # NOTE: Hum yahan '--headless' flag use NAHI kar rahe. 
-    # GitHub Action isko Xvfb ki virtual screen par kholay ga, jo video me record hogi.
     
     print("🚀 Script Start... Browser khul raha hai...")
     page = ChromiumPage(co)
@@ -41,7 +38,6 @@ def login_and_post():
         print("🍪 Cookies inject kar rahe hain...")
         for cookie in cookies:
             if 'facebook.com' in cookie.get('domain', ''):
-                # DrissionPage requires standard cookie format
                 cookie_dict = {
                     'name': cookie['name'],
                     'value': cookie['value'],
