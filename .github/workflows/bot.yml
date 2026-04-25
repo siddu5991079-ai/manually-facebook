@@ -6,15 +6,15 @@ on:
       titles:
         description: 'Titles (separated by ,,)'
         required: true
-        default: "Real Oviedo vs Villarreal live: LaLiga midnight warzone today,,Watch live: Real Oviedo hunt Villarreal in tonight's Spanish survival epic,,Live now: Real Oviedo vs Villarreal – giants collide under the stars,,LaLiga live: Oviedo host Villarreal in a must-watch destruction at 12:30 am,,Today's live match: Real Oviedo vs Villarreal – all the chaos from Carlos Tartiere"
+        default: "DC vs PBKS Epic Run Chase Live!,,Live: PBKS Chasing 265 Against DC,,DC vs PBKS High-Scoring Thriller Live Match,,IPL Action: Can PBKS Hunt Down DC's 264?,,Live Cricket: Delhi Capitals vs Punjab Kings Blockbuster"
       descriptions:
         description: 'Descriptions (separated by ,,)'
         required: true
-        default: "The clock strikes midnight and Spanish football explodes – catch every bone-rattling tackle, divine save, and match-winning goal as Real Oviedo and Villarreal tear each other apart,,Borja Bastón, Santi Cazorla, and Lucas Ahijado lead Oviedo's furious rebellion, while Gerard Moreno, Álex Baena, and Dani Parejo bring Villarreal's Yellow Submarine artillery – this is primeval LaLiga warfare,,European dreams meet relegation desperation – will Oviedo's fortress devour another giant, or can Villarreal's class silence the Asturian earthquake? Tune in live at 12:30 am,,From the thunderous Carlos Tartiere atmosphere to the tactical assassination on the pitch, this Real Oviedo vs Villarreal clash is pure adrenaline for every football fanatic,,History. Pride. Survival. Glory. Join the live destruction as Real Oviedo and Villarreal write their names in Spanish football flames"
+        default: "Delhi Capitals posted a mammoth 264 on the board but Punjab Kings are striking back hard in this electrifying run chase!,,With PBKS needing 82 runs from just 40 balls the tension is peaking in this unbelievable high-scoring IPL clash,,Catch the live action as Punjab Kings battle a massive required run rate of over 12 to chase down Delhi Capitals' massive total,,It is a boundary fest out here in match 35 of the IPL as DC's explosive batting is being matched by PBKS's fearless chase,,Two heavyweights colliding in an absolute run-fest so tune in to see if PBKS can complete one of the greatest chases in IPL history"
       hashtags:
         description: 'Hashtags (separated by ,,)'
         required: true
-        default: "#RealOviedo #Villarreal #LaLiga #MidnightWar ,, #Oviedo #VillarrealCF #CarlosTartiere #LiveFootball ,, #BorjaBaston #GerardMoreno #Cazorla #Parejo ,, #RealOviedoVsVillarreal #SpanishWarfare #LaLigaNights #MatchDay ,, #AsturianEarthquake #YellowSubmarine #watchlive #bulbul4u-live"
+        default: "#DCvPBKS #IPL2024 #CricketLive #RunChase,,#DelhiCapitals #PunjabKings #TATAIPL #LiveMatch,,#PBKS #DC #IPLThrills #CricketFans,,#HighScoringMatch #IPL #CricketFever #DCvsPBKS,,#IPLT20 #LiveCricket #CricketUpdate #IPLLive"
   # schedule:
   #   - cron: '0 5 * * *' 
 
