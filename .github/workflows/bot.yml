@@ -1,3 +1,17 @@
+
+
+
+
+
+
+
+
+
+
+
+# ================== gret job yeh done huqaaya uplaod succesfuuly done to facebook =====================================================
+
+
 name: FB Auto Bot (Video to Release)
 
 on:
@@ -5,6 +19,7 @@ on:
   schedule:
     - cron: '0 5 * * *' 
 
+# GitHub ko "Release" banane ki permission dena zaroori hai
 permissions:
   contents: write
 
@@ -39,9 +54,8 @@ jobs:
           ffmpeg -y -video_size 1920x1080 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -preset ultrafast -pix_fmt yuv420p output_video.mp4 > /dev/null 2>&1 &
           FFMPEG_PID=$!
           
-          # 3. Apna DrissionPage wala code run karein (Aur kachra saaf karein)
-          # Yahan humne "grep -vE" lagaya hai jo in faaltu warnings ko console se block kar dega
-          python main.py 2>&1 | grep -vE "XKEYBOARD|XF86|xkbcomp|not fatal"
+          # 3. Apna DrissionPage wala code run karein
+          python main.py
           
           # 4. Script khatam hone k baad recording safely band karein
           sleep 3
@@ -64,85 +78,6 @@ jobs:
             --notes "DrissionPage ne successfully Facebook par post kar di hai. Screen bilkul clean hai!"
           
           echo "✅ Video successfully Releases mein save ho gayi!"
-
-
-
-
-
-
-
-
-
-
-# ================== gret job yeh done huqaaya uplaod succesfuuly done to facebook =====================================================
-
-
-# name: FB Auto Bot (Video to Release)
-
-# on:
-#   workflow_dispatch: 
-#   schedule:
-#     - cron: '0 5 * * *' 
-
-# # GitHub ko "Release" banane ki permission dena zaroori hai
-# permissions:
-#   contents: write
-
-# jobs:
-#   run-bot:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - name: Code download kar raha hai...
-#         uses: actions/checkout@v4
-
-#       - name: Python setup kar raha hai...
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: '3.12' 
-
-#       - name: System Dependencies (Xvfb & FFmpeg) install kar raha hai...
-#         run: |
-#           sudo apt-get update
-#           sudo apt-get install -y xvfb ffmpeg
-#           pip install DrissionPage
-
-#       - name: Run Script & Record Video 🎥
-#         env:
-#           FB_COOKIES: ${{ secrets.FB_COOKIES }} 
-#         run: |
-#           # 1. Virtual screen setup
-#           Xvfb :99 -screen 0 1920x1080x24 &
-#           export DISPLAY=:99
-          
-#           # 2. FFmpeg recording start
-#           ffmpeg -y -video_size 1920x1080 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -preset ultrafast -pix_fmt yuv420p output_video.mp4 > /dev/null 2>&1 &
-#           FFMPEG_PID=$!
-          
-#           # 3. Apna DrissionPage wala code run karein
-#           python main.py
-          
-#           # 4. Script khatam hone k baad recording safely band karein
-#           sleep 3
-#           kill -INT $FFMPEG_PID
-#           sleep 2
-
-#       # ==========================================
-#       # 🚀 VIDEO KO GITHUB RELEASES MEIN UPLOAD KARNA
-#       # ==========================================
-#       - name: Upload Video to GitHub Releases
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-#         run: |
-#           TAG_NAME="FB-Post-$(date +'%Y%m%d-%H%M%S')"
-          
-#           echo "Uploading output_video.mp4 to GitHub Releases..."
-          
-#           gh release create "$TAG_NAME" output_video.mp4 \
-#             --title "Post Upload Saboot: $TAG_NAME" \
-#             --notes "DrissionPage ne successfully Facebook par post kar di hai. Screen bilkul clean hai!"
-          
-#           echo "✅ Video successfully Releases mein save ho gayi!"
 
 
 
