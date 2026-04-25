@@ -27,7 +27,6 @@ def download_latest_image():
                 print("❌ Release mein koi image nahi mili.")
                 return None
             
-            # Sabse aakhri (latest) image ko filter karna
             assets.sort(key=lambda x: x["created_at"], reverse=True)
             latest_asset = assets[0]
             
@@ -39,7 +38,7 @@ def download_latest_image():
             with open(image_name, 'wb') as f:
                 f.write(img_data)
             
-            print("✅ Image successfully download ho gayi!")
+            print("✅ Dynamic Image successfully download ho gayi!")
             return os.path.abspath(image_name)
         else:
             print(f"❌ GitHub API Error: Code {response.status_code}")
@@ -56,9 +55,6 @@ def login_and_post():
 
     cookies = json.loads(cookies_json)
 
-    # ==========================================
-    # 🛡️ BROWSER SETUP (STEALTH MODE)
-    # ==========================================
     co = ChromiumOptions()
     co.set_argument('--no-sandbox')
     co.set_argument('--disable-dev-shm-usage')
@@ -108,9 +104,29 @@ def login_and_post():
             print("❌ Timeout: Post box screen par nahi aaya.")
             return
 
-        # Naya code call ho raha hai yahan
-        image_path = download_latest_image()
+        # ==========================================
+        # 📸 DONO IMAGES READY KARNA
+        # ==========================================
+        dynamic_image_path = download_latest_image()
+        static_image_path = os.path.abspath("1.png")
+        
+        images_to_upload = []
+        
+        # Agar dynamic image mili toh list mein daal do
+        if dynamic_image_path and os.path.exists(dynamic_image_path):
+            images_to_upload.append(dynamic_image_path)
+            
+        # Agar static image (1.png) mojud hai toh usko bhi list mein daal do
+        if os.path.exists(static_image_path):
+            images_to_upload.append(static_image_path)
 
+        if len(images_to_upload) == 0:
+            print("❌ Koi bhi image nahi mili (na static, na dynamic). Script rok rahe hain.")
+            return
+
+        # ==========================================
+        # STEP 1: CREATE POST POPUP KHOLNA
+        # ==========================================
         print("▶️ STEP 1: 'What's on your mind?' wale box par click kar rahe hain...")
         create_post_btn = page.ele(post_box_xpath)
         
@@ -131,6 +147,9 @@ def login_and_post():
             print("❌ Box select nahi ho saka.")
             return
 
+        # ==========================================
+        # STEP 2: TEXT TYPE KARNA
+        # ==========================================
         print("▶️ STEP 2: Text box mein likh rahe hain...")
         text_box = page.ele('xpath://div[@role="dialog"]//div[@role="textbox" and @contenteditable="true"]', timeout=5)
         if text_box:
@@ -143,25 +162,36 @@ def login_and_post():
             print("❌ Text box dialog mein nahi mila.")
             return
 
-        print("▶️ STEP 3: Photo upload kar rahe hain...")
+        # ==========================================
+        # STEP 3: EK SATH MULTIPLE IMAGES UPLOAD KARNA
+        # ==========================================
+        print(f"▶️ STEP 3: Ek sath {len(images_to_upload)} photos upload kar rahe hain...")
         photo_icon = page.ele('xpath://div[@role="dialog"]//div[@aria-label="Photo/video"]', timeout=5)
         if photo_icon:
             photo_icon.click(by_js=True)
             time.sleep(2)
             
-            if image_path and os.path.exists(image_path):
-                file_input = page.ele('xpath://div[@role="dialog"]//input[@type="file"]')
-                if file_input:
-                    file_input.input(image_path)
-                    print(f"✅ Photo attached: {image_path}")
-                    time.sleep(6)
+            file_input = page.ele('xpath://div[@role="dialog"]//input[@type="file"]')
+            if file_input:
+                # Yahan hum puri list pass kar rahe hain!
+                file_input.input(images_to_upload)
+                print(f"✅ {len(images_to_upload)} Photos attached!")
+                
+                # Kyunki 2 images hain, toh thoda zyada wait karenge taake load ho jayein
+                time.sleep(10) 
 
+        # ==========================================
+        # STEP 4: NEXT BUTTON
+        # ==========================================
         print("▶️ STEP 4: Next button daba rahe hain...")
         next_btn = page.ele('css:div[aria-label="Next"][role="button"]', timeout=3)
         if next_btn:
             next_btn.click(by_js=True)
             time.sleep(4)
 
+        # ==========================================
+        # STEP 4.5: POST BUTTON
+        # ==========================================
         print("▶️ STEP 4.5: Post button ya popup check kar rahe hain...")
         post_btn = page.ele('xpath://div[@aria-label="Post" and @role="button"]', timeout=3) or page.ele('xpath://span[text()="Post"]', timeout=2)
         if post_btn:
@@ -172,18 +202,24 @@ def login_and_post():
             if close_early:
                 close_early.click(by_js=True)
 
+        # ==========================================
+        # STEP 4.8: ZIDDI POPUP HUNTER
+        # ==========================================
         for i in range(2):
             time.sleep(6) 
             popup_close_btn = page.ele('css:div[aria-label="Close"][role="button"]', timeout=3)
             if popup_close_btn:
                 popup_close_btn.click(by_js=True)
 
+        # ==========================================
+        # STEP 5: FINAL "SHARE NOW" BUTTON
+        # ==========================================
         print("▶️ STEP 5: Final Share button dhoond rahe hain...")
         share_now_btn = page.ele('css:div[aria-label="Share now"][role="button"]', timeout=3) or page.ele('xpath://span[text()="Share now" or text()="Publish" or text()="Share"]', timeout=2)
         if share_now_btn:
             share_now_btn.click(by_js=True)
             time.sleep(8)
-            print("🎉 BINGO! Facebook Post 100% Successful.")
+            print("🎉 BINGO! Facebook Post 100% Successful with MULTIPLE images.")
         
         time.sleep(5) 
 
@@ -212,7 +248,34 @@ if __name__ == "__main__":
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # yeh upload tu kar deya hai lekin 2 post individually measn 2 photo ko eek sath eek post mei uplaod nehy kar pata 
+
 
 
 
@@ -246,6 +309,7 @@ if __name__ == "__main__":
 #                 print("❌ Release mein koi image nahi mili.")
 #                 return None
             
+#             # Sabse aakhri (latest) image ko filter karna
 #             assets.sort(key=lambda x: x["created_at"], reverse=True)
 #             latest_asset = assets[0]
             
@@ -415,6 +479,23 @@ if __name__ == "__main__":
 
 # if __name__ == "__main__":
 #     login_and_post()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
