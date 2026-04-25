@@ -1,12 +1,11 @@
-
 name: FB Auto Bot (Video to Release)
 
 on:
   workflow_dispatch: 
-  # schedule:
-  #   - cron: '0 5 * * *' 
+  schedule:
+    - cron: '0 5 * * *' 
 
-# ⚠️ NAYA: GitHub ko "Release" banane ki permission dena zaroori hai
+# GitHub ko "Release" banane ki permission dena zaroori hai
 permissions:
   contents: write
 
@@ -50,21 +49,19 @@ jobs:
           sleep 2
 
       # ==========================================
-      # 🚀 NAYA: VIDEO KO GITHUB RELEASES MEIN UPLOAD KARNA
+      # 🚀 VIDEO KO GITHUB RELEASES MEIN UPLOAD KARNA
       # ==========================================
       - name: Upload Video to GitHub Releases
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Yeh token GitHub khud provide karta hai
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
         run: |
-          # Ek unique tag name banayen taake har video alag save ho
           TAG_NAME="FB-Post-$(date +'%Y%m%d-%H%M%S')"
           
           echo "Uploading output_video.mp4 to GitHub Releases..."
           
-          # GitHub CLI command video ko direct release mein push karne ke liye
           gh release create "$TAG_NAME" output_video.mp4 \
             --title "Post Upload Saboot: $TAG_NAME" \
-            --notes "DrissionPage ne successfully Facebook par post kar di hai. Video attached hai."
+            --notes "DrissionPage ne successfully Facebook par post kar di hai. Screen bilkul clean hai!"
           
           echo "✅ Video successfully Releases mein save ho gayi!"
 
