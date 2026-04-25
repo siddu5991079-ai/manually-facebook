@@ -1,4 +1,5 @@
 
+
 name: FB Auto Bot (Video to Release)
 
 on:
@@ -72,6 +73,8 @@ jobs:
             echo "❌ Video file nahi mili, shayad ffmpeg properly start nahi hua."
           fi
 
+
+          
           
 
 
@@ -79,6 +82,7 @@ jobs:
 
 
 # yeh upload tu kar deya hai lekin 2 post individually measn 2 photo ko eek sath eek post mei uplaod nehy kar pata 
+
 
 
 # name: FB Auto Bot (Video to Release)
@@ -114,6 +118,7 @@ jobs:
 #       - name: Run Script & Record Video 🎥
 #         env:
 #           FB_COOKIES: ${{ secrets.FB_COOKIES }} 
+#           PYTHONUNBUFFERED: 1  # 👈 YEH LOGS KO REAL-TIME KAREGA
 #         run: |
 #           # 1. Virtual screen setup
 #           Xvfb :99 -screen 0 1920x1080x24 &
@@ -123,8 +128,8 @@ jobs:
 #           ffmpeg -y -video_size 1920x1080 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -preset ultrafast -pix_fmt yuv420p output_video.mp4 > /dev/null 2>&1 &
 #           FFMPEG_PID=$!
           
-#           # 3. Apna DrissionPage wala code run karein
-#           python main.py
+#           # 3. Apna DrissionPage wala code run karein (-u flag zaroori hai real-time logs ke liye)
+#           python -u main.py
           
 #           # 4. Script khatam hone k baad recording safely band karein
 #           sleep 3
@@ -135,6 +140,7 @@ jobs:
 #       # 🚀 VIDEO KO GITHUB RELEASES MEIN UPLOAD KARNA
 #       # ==========================================
 #       - name: Upload Video to GitHub Releases
+#         if: always() # 👈 SCRIPT FAIL BHI HO TO VIDEO UPLOAD HOGI TAAYE ERROR DIKH SAKE
 #         env:
 #           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
 #         run: |
@@ -142,12 +148,15 @@ jobs:
           
 #           echo "Uploading output_video.mp4 to GitHub Releases..."
           
-#           gh release create "$TAG_NAME" output_video.mp4 \
-#             --title "Post Upload Saboot: $TAG_NAME" \
-#             --notes "DrissionPage ne successfully Facebook par post kar di hai. Screen bilkul clean hai!"
-          
-#           echo "✅ Video successfully Releases mein save ho gayi!"
-
+#           # Check if video was actually created
+#           if [ -f "output_video.mp4" ]; then
+#             gh release create "$TAG_NAME" output_video.mp4 \
+#               --title "Post Upload Saboot: $TAG_NAME" \
+#               --notes "Automated run ka video evidence."
+#             echo "✅ Video successfully Releases mein save ho gayi!"
+#           else
+#             echo "❌ Video file nahi mili, shayad ffmpeg properly start nahi hua."
+#           fi
 
 
 
