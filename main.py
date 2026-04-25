@@ -40,10 +40,9 @@ print(f"✅ Total Unique Messages Generated: {len(all_messages)}")
 # ==========================================
 def download_latest_images(count=3):
     print(f"🔍 GitHub se top {count} latest images dhoond rahe hain...")
-    api_url = "https://api.github.com/repos/siddu5991079-ai/twitter-images-daddy-jajaja-3/releases/tag/live-match-updates"
+    api_url = "https://api.github.com/repos/siddu5991079-ai/twitter-images-daddy-jajaja-3/releases/tags/live-match-updates"
     
-               # https://github.com/          siddu5991079-ai/twitter-images-daddy-jajaja-3/releases/tag/live-match-updates
-    
+                      # https://github.com/siddu5991079-ai/twitter-images-daddy-jajaja-3/releases/tag/live-match-updates 
     
     downloaded_paths = []
     
