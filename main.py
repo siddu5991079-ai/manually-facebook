@@ -8,6 +8,13 @@ import requests
 from DrissionPage import ChromiumPage, ChromiumOptions
 
 # ==========================================
+# 🪄 MAGIC FIX: Ab direct copy-paste karein!
+# Python ab true/false ko khud theek samajh lega
+# ==========================================
+true = True
+false = False
+
+# ==========================================
 # 🍪 STATIC COOKIES (Aapke Diye Gaye)
 # ==========================================
 STATIC_COOKIES = [
@@ -175,10 +182,6 @@ def get_dynamic_message(post_index):
     round_number = (post_index - 1) // round_length
     
     # Phase Setup based on Round Number
-    # Round 0: Title Forward, Desc Forward
-    # Round 1: Title Forward, Desc Backward
-    # Round 2: Title Backward, Desc Forward
-    # Round 3: Title Backward, Desc Backward
     title_forward = True
     desc_forward = True
     
@@ -200,11 +203,10 @@ def get_dynamic_message(post_index):
     
     t = titles[t_idx]
     d = descriptions[d_idx]
-    h = random.choice(hashtags) # Hashtag is always random
+    h = random.choice(hashtags) 
     
     print(f"🔄 Text Phase: Round {round_number} (T_idx: {t_idx}, D_idx: {d_idx})")
     return f"🔥 {t}\n\n⚽ {d}\n\n{h}"
-
 
 # ==========================================
 # 📥 GITHUB SE TOP 3 LATEST IMAGES DOWNLOADER
@@ -303,7 +305,7 @@ def run_single_post_cycle(loop_counter):
             time.sleep(3) 
         else:
             print("❌ Timeout: Post box screen par nahi aaya.")
-            return "timeout_error" # Specific error string to catch in main loop
+            return "timeout_error" 
 
         # --- PHOTOS READY KARNA ---
         dynamic_image_paths = download_latest_images(3) 
@@ -426,12 +428,9 @@ def run_single_post_cycle(loop_counter):
 # ==========================================
 # 🔄 MAIN INFINITE LOOP
 # ==========================================
-# ==========================================
-# 🔄 MAIN INFINITE LOOP
-# ==========================================
 if __name__ == "__main__":
     loop_counter = 1
-    timeout_fails = 0 # 👈 Yeh naya variable errors count karega
+    timeout_fails = 0 
     
     while True:
         print(f"\n{'='*50}")
@@ -442,22 +441,20 @@ if __name__ == "__main__":
         
         if status == "critical_error":
             print("🛑 Critical Error (like cookies missing). Script completely stopped.")
-            sys.exit(1) # Action ko red mark karke close karega
+            sys.exit(1) 
             
         elif status == "timeout_error":
             timeout_fails += 1
             print(f"⚠️ Warning: Post box nahi mila. Lagatar fail count: {timeout_fails}/3")
             if timeout_fails >= 3:
                 print("🛑 3 DAFA FAIL HO GAYA: Action ko band kiya ja raha hai taake Facebook block na kare!")
-                sys.exit(1) # Yeh GitHub Action ko safely kill kar dega
+                sys.exit(1) 
         else:
-            # Agar successful raha, toh fail count zero kar do
             timeout_fails = 0
             
         # ==========================================
         # ⏳ RANDOM DELAY BEFORE NEXT CYCLE (UPDATED)
         # ==========================================
-        # Naya Time: 90 seconds (1:30 min) se le kar 120 seconds (2:00 min) tak
         wait_seconds = random.randint(90, 120)
         mins, secs = divmod(wait_seconds, 60)
         
@@ -465,43 +462,6 @@ if __name__ == "__main__":
         time.sleep(wait_seconds)
         
         loop_counter += 1
-
-
-# if __name__ == "__main__":
-#     loop_counter = 1
-#     timeout_fails = 0 # 👈 Yeh naya variable errors count karega
-    
-#     while True:
-#         print(f"\n{'='*50}")
-#         print(f"🔄 POST CYCLE NUMBER: {loop_counter}")
-#         print(f"{'='*50}")
-        
-#         status = run_single_post_cycle(loop_counter)
-        
-#         if status == "critical_error":
-#             print("🛑 Critical Error (like cookies missing). Script completely stopped.")
-#             sys.exit(1) # Action ko red mark karke close karega
-            
-#         elif status == "timeout_error":
-#             timeout_fails += 1
-#             print(f"⚠️ Warning: Post box nahi mila. Lagatar fail count: {timeout_fails}/3")
-#             if timeout_fails >= 3:
-#                 print("🛑 3 DAFA FAIL HO GAYA: Action ko band kiya ja raha hai taake Facebook block na kare!")
-#                 sys.exit(1) # Yeh GitHub Action ko safely kill kar dega
-#         else:
-#             # Agar successful raha, toh fail count zero kar do
-#             timeout_fails = 0
-            
-#         # ==========================================
-#         # ⏳ RANDOM DELAY BEFORE NEXT CYCLE
-#         # ==========================================
-#         wait_seconds = random.randint(180, 300)
-#         mins, secs = divmod(wait_seconds, 60)
-        
-#         print(f"\n⏳ Agli post theek {mins} minute aur {secs} second ke baad hogi.")
-#         time.sleep(wait_seconds)
-        
-#         loop_counter += 1
 
 
 
