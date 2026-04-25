@@ -15,8 +15,8 @@ on:
         description: 'Hashtags (separated by ,,)'
         required: true
         default: "#RealOviedo #Villarreal #LaLiga #MidnightWar ,, #Oviedo #VillarrealCF #CarlosTartiere #LiveFootball ,, #BorjaBaston #GerardMoreno #Cazorla #Parejo ,, #RealOviedoVsVillarreal #SpanishWarfare #LaLigaNights #MatchDay ,, #AsturianEarthquake #YellowSubmarine #watchlive #bulbul4u-live"
-  schedule:
-    - cron: '0 5 * * *' 
+  # schedule:
+  #   - cron: '0 5 * * *' 
 
 # GitHub ko "Release" banane ki permission dena zaroori hai
 permissions:
