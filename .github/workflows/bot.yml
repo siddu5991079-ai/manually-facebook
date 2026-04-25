@@ -1,5 +1,5 @@
 
-name: Facebook Auto Bot
+name: FB Auto Bot (DrissionPage + Video)
 
 on:
   workflow_dispatch: 
@@ -7,7 +7,7 @@ on:
   #   - cron: '0 5 * * *' 
 
 jobs:
-  run-script:
+  run-bot:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,21 +19,95 @@ jobs:
         with:
           python-version: '3.12' 
 
-      - name: Selenium install kar raha hai...
+      - name: System Dependencies (Xvfb & FFmpeg) install kar raha hai...
         run: |
-          pip install selenium
+          sudo apt-get update
+          sudo apt-get install -y xvfb ffmpeg
+          # DrissionPage ki installation
+          pip install DrissionPage
 
-      - name: Bot run kar raha hai!
+      - name: Run Script & Record Video 🎥
         env:
           FB_COOKIES: ${{ secrets.FB_COOKIES }} 
-        run: python main.py
+        run: |
+          # 1. Xvfb se ek virtual screen (Display 99) create karein 1920x1080 resolution pe
+          Xvfb :99 -screen 0 1920x1080x24 &
+          export DISPLAY=:99
+          
+          # 2. FFmpeg se us virtual screen ki background recording start karein
+          ffmpeg -y -video_size 1920x1080 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -preset ultrafast -pix_fmt yuv420p output_video.mp4 > /dev/null 2>&1 &
+          FFMPEG_PID=$!
+          
+          # 3. Apna DrissionPage wala code run karein
+          python main.py
+          
+          # 4. Script khatam hone k baad thora wait karein aur recording safely band karein
+          sleep 3
+          kill -INT $FFMPEG_PID
+          sleep 2 # FFmpeg ko file save karne ka time dena zaroori hai
 
-      # --- YEH NAYA STEP HAI SABOOT DOWNLOAD KARNE KE LIYE ---
-      - name: Upload Saboot (Screenshots)
+      - name: Upload Video Saboot
         uses: actions/upload-artifact@v4
         with:
-          name: FB-Login-Proof
-          path: screenshots/
+          name: FB-Video-Proof
+          path: output_video.mp4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =========== Good job, facebook open hu raha hai and screenshot saaboot hai beloe code mei, aaabbb opper facebook uplaod waala system add akrty hai inshallah ================
+
+
+
+# name: Facebook Auto Bot
+
+# on:
+#   workflow_dispatch: 
+#   # schedule:
+#   #   - cron: '0 5 * * *' 
+
+# jobs:
+#   run-script:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Code download kar raha hai...
+#         uses: actions/checkout@v4
+
+#       - name: Python setup kar raha hai...
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.12' 
+
+#       - name: Selenium install kar raha hai...
+#         run: |
+#           pip install selenium
+
+#       - name: Bot run kar raha hai!
+#         env:
+#           FB_COOKIES: ${{ secrets.FB_COOKIES }} 
+#         run: python main.py
+
+#       # --- YEH NAYA STEP HAI SABOOT DOWNLOAD KARNE KE LIYE ---
+#       - name: Upload Saboot (Screenshots)
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: FB-Login-Proof
+#           path: screenshots/
 
 
 
