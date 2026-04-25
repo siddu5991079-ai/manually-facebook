@@ -1,3 +1,4 @@
+
 name: FB Auto Bot (Video to Release)
 
 on:
@@ -6,15 +7,15 @@ on:
       titles:
         description: 'Titles (separated by ,,)'
         required: true
-        default: "DC vs PBKS Epic Run Chase Live!,,Live: PBKS Chasing 265 Against DC,,DC vs PBKS High-Scoring Thriller Live Match,,IPL Action: Can PBKS Hunt Down DC's 264?,,Live Cricket: Delhi Capitals vs Punjab Kings Blockbuster"
+        default: "Real Oviedo vs Villarreal live: LaLiga midnight warzone today,,Watch live: Real Oviedo hunt Villarreal in tonight's Spanish survival epic,,Live now: Real Oviedo vs Villarreal – giants collide under the stars,,LaLiga live: Oviedo host Villarreal in a must-watch destruction at 12:30 am,,Today's live match: Real Oviedo vs Villarreal – all the chaos from Carlos Tartiere"
       descriptions:
         description: 'Descriptions (separated by ,,)'
         required: true
-        default: "Delhi Capitals posted a mammoth 264 on the board but Punjab Kings are striking back hard in this electrifying run chase!,,With PBKS needing 82 runs from just 40 balls the tension is peaking in this unbelievable high-scoring IPL clash,,Catch the live action as Punjab Kings battle a massive required run rate of over 12 to chase down Delhi Capitals' massive total,,It is a boundary fest out here in match 35 of the IPL as DC's explosive batting is being matched by PBKS's fearless chase,,Two heavyweights colliding in an absolute run-fest so tune in to see if PBKS can complete one of the greatest chases in IPL history"
+        default: "The clock strikes midnight and Spanish football explodes – catch every bone-rattling tackle, divine save, and match-winning goal as Real Oviedo and Villarreal tear each other apart,,Borja Bastón, Santi Cazorla, and Lucas Ahijado lead Oviedo's furious rebellion, while Gerard Moreno, Álex Baena, and Dani Parejo bring Villarreal's Yellow Submarine artillery – this is primeval LaLiga warfare,,European dreams meet relegation desperation – will Oviedo's fortress devour another giant, or can Villarreal's class silence the Asturian earthquake? Tune in live at 12:30 am,,From the thunderous Carlos Tartiere atmosphere to the tactical assassination on the pitch, this Real Oviedo vs Villarreal clash is pure adrenaline for every football fanatic,,History. Pride. Survival. Glory. Join the live destruction as Real Oviedo and Villarreal write their names in Spanish football flames"
       hashtags:
         description: 'Hashtags (separated by ,,)'
         required: true
-        default: "#DCvPBKS #IPL2024 #CricketLive #RunChase,,#DelhiCapitals #PunjabKings #TATAIPL #LiveMatch,,#PBKS #DC #IPLThrills #CricketFans,,#HighScoringMatch #IPL #CricketFever #DCvsPBKS,,#IPLT20 #LiveCricket #CricketUpdate #IPLLive"
+        default: "#RealOviedo #Villarreal #LaLiga #MidnightWar ,, #Oviedo #VillarrealCF #CarlosTartiere #LiveFootball ,, #BorjaBaston #GerardMoreno #Cazorla #Parejo ,, #RealOviedoVsVillarreal #SpanishWarfare #LaLigaNights #MatchDay ,, #AsturianEarthquake #YellowSubmarine #watchlive #bulbul4u-live"
   # schedule:
   #   - cron: '0 5 * * *' 
 
@@ -94,6 +95,113 @@ jobs:
           else
             echo "❌ Video file nahi mili."
           fi
+
+
+
+
+
+
+
+
+# // iss mei joo title description or hantangs hai iss k waja se facebook mei uplaod nehy hur haha i 
+
+
+# name: FB Auto Bot (Video to Release)
+
+# on:
+#   workflow_dispatch: 
+#     inputs:
+#       titles:
+#         description: 'Titles (separated by ,,)'
+#         required: true
+#         default: "DC vs PBKS Epic Run Chase Live!,,Live: PBKS Chasing 265 Against DC,,DC vs PBKS High-Scoring Thriller Live Match,,IPL Action: Can PBKS Hunt Down DC's 264?,,Live Cricket: Delhi Capitals vs Punjab Kings Blockbuster"
+#       descriptions:
+#         description: 'Descriptions (separated by ,,)'
+#         required: true
+#         default: "Delhi Capitals posted a mammoth 264 on the board but Punjab Kings are striking back hard in this electrifying run chase!,,With PBKS needing 82 runs from just 40 balls the tension is peaking in this unbelievable high-scoring IPL clash,,Catch the live action as Punjab Kings battle a massive required run rate of over 12 to chase down Delhi Capitals' massive total,,It is a boundary fest out here in match 35 of the IPL as DC's explosive batting is being matched by PBKS's fearless chase,,Two heavyweights colliding in an absolute run-fest so tune in to see if PBKS can complete one of the greatest chases in IPL history"
+#       hashtags:
+#         description: 'Hashtags (separated by ,,)'
+#         required: true
+#         default: "#DCvPBKS #IPL2024 #CricketLive #RunChase,,#DelhiCapitals #PunjabKings #TATAIPL #LiveMatch,,#PBKS #DC #IPLThrills #CricketFans,,#HighScoringMatch #IPL #CricketFever #DCvsPBKS,,#IPLT20 #LiveCricket #CricketUpdate #IPLLive"
+#   # schedule:
+#   #   - cron: '0 5 * * *' 
+
+# permissions:
+#   contents: write
+
+# jobs:
+#   run-bot:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Code download kar raha hai...
+#         uses: actions/checkout@v4
+
+#       - name: Python setup kar raha hai...
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.12' 
+
+#       - name: System Dependencies (Xvfb & FFmpeg) install kar raha hai...
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y xvfb ffmpeg
+#           pip install DrissionPage requests
+
+#       - name: Run Script & Record Video 🎥
+#         env:
+#           FB_COOKIES: ${{ secrets.FB_COOKIES }} 
+#           PYTHONUNBUFFERED: 1  
+#           TITLES: ${{ inputs.titles }}             
+#           DESCRIPTIONS: ${{ inputs.descriptions }} 
+#           HASHTAGS: ${{ inputs.hashtags }}         
+#         run: |
+#           # 1. Virtual screen setup
+#           Xvfb :99 -screen 0 1920x1080x24 &
+#           export DISPLAY=:99
+          
+#           # 2. FFmpeg recording start
+#           ffmpeg -y -video_size 1920x1080 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -preset ultrafast -pix_fmt yuv420p output_video.mp4 > /dev/null 2>&1 &
+          
+#           # 💡 NAYA LOGIC: FFmpeg ka process ID ek file mein save kar lo
+#           echo $! > ffmpeg.pid
+          
+#           # 3. Apna DrissionPage wala code run karein
+#           python -u main.py
+
+#       # ==========================================
+#       # 🛑 SAFELY STOP RECORDING (Even if canceled)
+#       # ==========================================
+#       - name: Safely Finalize Video Recording 🛑
+#         if: always() # 👈 Cancel karne par bhi yeh step chalega
+#         run: |
+#           if [ -f "ffmpeg.pid" ]; then
+#             echo "🛑 Script ruk gayi hai. FFmpeg ko safely band kar rahe hain taake video corrupt na ho..."
+#             kill -INT $(cat ffmpeg.pid)
+#             sleep 3 # Video ko MP4 format mein properly compile hone ka time de rahe hain
+#           else
+#             echo "⚠️ Recording shuru hi nahi hui thi."
+#           fi
+
+#       # ==========================================
+#       # 🚀 VIDEO KO GITHUB RELEASES MEIN UPLOAD KARNA
+#       # ==========================================
+#       - name: Upload Video to GitHub Releases
+#         if: always() 
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#         run: |
+#           TAG_NAME="FB-Post-$(date +'%Y%m%d-%H%M%S')"
+#           echo "Uploading output_video.mp4 to GitHub Releases..."
+          
+#           if [ -f "output_video.mp4" ]; then
+#             gh release create "$TAG_NAME" output_video.mp4 \
+#               --title "Post Upload Saboot: $TAG_NAME" \
+#               --notes "Automated run ka video evidence."
+#             echo "✅ Video successfully Releases mein save ho gayi! Ab yeh perfectly play hogi."
+#           else
+#             echo "❌ Video file nahi mili."
+#           fi
           
 
 
