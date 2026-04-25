@@ -1,4 +1,6 @@
+
 import os
+import sys
 import json
 import time
 import random
@@ -6,7 +8,153 @@ import requests
 from DrissionPage import ChromiumPage, ChromiumOptions
 
 # ==========================================
-# 📝 DYNAMIC TEXT GENERATOR (DC vs PBKS)
+# 🍪 STATIC COOKIES (Aapke Diye Gaye)
+# ==========================================
+STATIC_COOKIES = [
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1808672144.906412,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "c_user",
+    "path": "/",
+    "sameSite": "no_restriction",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "61577508418302",
+    "id": 1
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1810563190.51904,
+    "hostOnly": false,
+    "httpOnly": true,
+    "name": "datr",
+    "path": "/",
+    "sameSite": "no_restriction",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "dqjbaZnFspMJHSLJfbluIC9-",
+    "id": 2
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1777740948,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "dpr",
+    "path": "/",
+    "sameSite": "no_restriction",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "1.5",
+    "id": 3
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1784912149.051703,
+    "hostOnly": false,
+    "httpOnly": true,
+    "name": "fr",
+    "path": "/",
+    "sameSite": "no_restriction",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "1cLZaBRkaVyCgZxwb.AWe3ihfDiau926G9YWxkd4wioSJYifopEPEJXsMPyfDcAwV-eW4.Bp7PIR..AAA.0.0.Bp7PIV.AWd5RTQvdViJUfr9fD-inNGqC90",
+    "id": 4
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1808672148.143214,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "i_user",
+    "path": "/",
+    "sameSite": "no_restriction",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "61573260805622",
+    "id": 5
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1810567744.598504,
+    "hostOnly": false,
+    "httpOnly": true,
+    "name": "ps_l",
+    "path": "/",
+    "sameSite": "lax",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "1",
+    "id": 6
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1810567744.598691,
+    "hostOnly": false,
+    "httpOnly": true,
+    "name": "ps_n",
+    "path": "/",
+    "sameSite": "no_restriction",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "1",
+    "id": 7
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1811696141.18693,
+    "hostOnly": false,
+    "httpOnly": true,
+    "name": "sb",
+    "path": "/",
+    "sameSite": "no_restriction",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "eqjbaaaxH_a0jKK1NkEU3eoe",
+    "id": 8
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1777740946,
+    "hostOnly": false,
+    "httpOnly": false,
+    "name": "wd",
+    "path": "/",
+    "sameSite": "lax",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "1280x593",
+    "id": 9
+},
+{
+    "domain": ".facebook.com",
+    "expirationDate": 1808672144.906726,
+    "hostOnly": false,
+    "httpOnly": true,
+    "name": "xs",
+    "path": "/",
+    "sameSite": "no_restriction",
+    "secure": true,
+    "session": false,
+    "storeId": "0",
+    "value": "20%3AJreFHfMeEfQGCg%3A2%3A1777136140%3A-1%3A-1%3A%3AAcw1L2igoM4d_INErjMJ29pIdstG_vQPBYrA5eYeow",
+    "id": 10
+}
+]
+
+# ==========================================
+# 📝 DYNAMIC TEXT GENERATOR ARRAYS
 # ==========================================
 DEFAULT_TITLES = "DC vs PBKS Live IPL Clash!,,Catch the Delhi Capitals vs Punjab Kings thriller live,,Live now: DC vs PBKS high-voltage IPL match,,Must-watch IPL action: DC takes on PBKS,,Today's blockbuster: Delhi Capitals vs Punjab Kings Live"
 DEFAULT_DESC = "Delhi Capitals won the toss and chose to bat first at a blazing CRR of 13.20 – catch every monstrous six, bone-crushing wicket, and boundary blizzard as these two IPL titans collide in match 35 of 70,,Rishabh Pant, David Warner, and Axar Patel lead DC's explosive assassination unit, while Shikhar Dhawan, Liam Livingstone, and Kagiso Rabada bring PBKS's savage firepower – this is not cricket, this is primeval IPL warfare,,Two massive playoff points hang in the balance – will Delhi Capitals' fortress devour another victim, or can Punjab Kings rip apart the script and conquer the capital? Tune in live,,From the deafening Arun Jaitley Stadium atmosphere to the last-over heart-stopping drama, this DC vs PBKS clash is an absolute adrenaline bomb for every true cricket fanatic,,Record-chasing. Playoff dreaming. Pure, unapologetic cricketing bloodsport. Join the live annihilation as Delhi Capitals and Punjab Kings write their names in IPL fire"
@@ -20,15 +168,43 @@ titles = [t.strip() for t in titles_str.split(",,") if t.strip()]
 descriptions = [d.strip() for d in descriptions_str.split(",,") if d.strip()]
 hashtags = [h.strip() for h in hashtags_str.split(",,") if h.strip()]
 
-all_messages = []
+def get_dynamic_message(post_index):
+    # Determine the length of the longest array to know when one "round" finishes
+    round_length = max(len(titles), len(descriptions))
+    current_step = (post_index - 1) % round_length
+    round_number = (post_index - 1) // round_length
+    
+    # Phase Setup based on Round Number
+    # Round 0: Title Forward, Desc Forward
+    # Round 1: Title Forward, Desc Backward
+    # Round 2: Title Backward, Desc Forward
+    # Round 3: Title Backward, Desc Backward
+    title_forward = True
+    desc_forward = True
+    
+    if round_number % 4 == 1:
+        desc_forward = False
+    elif round_number % 4 == 2:
+        title_forward = False
+    elif round_number % 4 == 3:
+        title_forward = False
+        desc_forward = False
 
-for t in titles:
-    for d in descriptions:
-        for h in hashtags:
-            formatted_text = f"🔥 {t}\n\n⚽ {d}\n\n{h}"
-            all_messages.append(formatted_text)
+    # Get Index based on direction
+    t_idx = current_step if title_forward else (len(titles) - 1 - (current_step % len(titles)))
+    d_idx = current_step if desc_forward else (len(descriptions) - 1 - (current_step % len(descriptions)))
+    
+    # Safety modulo
+    t_idx = t_idx % len(titles)
+    d_idx = d_idx % len(descriptions)
+    
+    t = titles[t_idx]
+    d = descriptions[d_idx]
+    h = random.choice(hashtags) # Hashtag is always random
+    
+    print(f"🔄 Text Phase: Round {round_number} (T_idx: {t_idx}, D_idx: {d_idx})")
+    return f"🔥 {t}\n\n⚽ {d}\n\n{h}"
 
-print(f"✅ Total Unique Messages Generated: {len(all_messages)}")
 
 # ==========================================
 # 📥 GITHUB SE TOP 3 LATEST IMAGES DOWNLOADER
@@ -81,12 +257,7 @@ def download_latest_images(count=3):
 # 🚀 SINGLE POST CYCLE FUNCTION
 # ==========================================
 def run_single_post_cycle(loop_counter):
-    cookies_json = os.environ.get('FB_COOKIES')
-    if not cookies_json:
-        print("❌ Error: FB_COOKIES secret nahi mila!")
-        return False # False means critical error, stop main loop
-
-    cookies = json.loads(cookies_json)
+    cookies = STATIC_COOKIES
 
     co = ChromiumOptions()
     co.set_argument('--no-sandbox')
@@ -120,7 +291,7 @@ def run_single_post_cycle(loop_counter):
         page.get("https://www.facebook.com/")
         if "log in" in page.title.lower() or "login" in page.title.lower():
             print("❌ Login Failed! Cookies expire ho chuki hain.")
-            return False 
+            return "critical_error"
         
         print("✅ Login Successful! Bot tayyar hai.")
         page.wait.load_start() 
@@ -132,7 +303,7 @@ def run_single_post_cycle(loop_counter):
             time.sleep(3) 
         else:
             print("❌ Timeout: Post box screen par nahi aaya.")
-            raise Exception("Post box not found")
+            return "timeout_error" # Specific error string to catch in main loop
 
         # --- PHOTOS READY KARNA ---
         dynamic_image_paths = download_latest_images(3) 
@@ -161,10 +332,9 @@ def run_single_post_cycle(loop_counter):
         # --- STEP 2: TYPE TEXT ---
         text_box = page.ele('xpath://div[@role="dialog"]//div[@role="textbox" and @contenteditable="true"]', timeout=5)
         if text_box:
-            current_message_index = (loop_counter - 1) % len(all_messages)
-            text_to_post = all_messages[current_message_index]
+            text_to_post = get_dynamic_message(loop_counter)
             text_box.input(text_to_post)
-            print(f"✅ Text type ho gaya. (Index: {current_message_index + 1})")
+            print(f"✅ Text type ho gaya.")
             time.sleep(3)
 
         # --- STEP 3: UPLOAD PHOTOS ---
@@ -206,7 +376,6 @@ def run_single_post_cycle(loop_counter):
         for i in range(3):
             time.sleep(2)
             
-            # 1. The "Hosting an event?" popup bypass
             publish_original_btn = page.ele('xpath://span[text()="Publish Original Post"]', timeout=2) or \
                                    page.ele('text:Publish Original Post', timeout=1)
             if publish_original_btn:
@@ -215,7 +384,6 @@ def run_single_post_cycle(loop_counter):
                 time.sleep(5)
                 continue
                 
-            # 2. Standard popups with an "X" or "Close" button
             popup_close_btn = page.ele('css:div[aria-label="Close"][role="button"]', timeout=2)
             if popup_close_btn:
                 print("🎯 Standard 'Close' popup detected! Clicking 'X'...")
@@ -223,7 +391,6 @@ def run_single_post_cycle(loop_counter):
                 time.sleep(3)
                 continue
 
-            # 3. Human-like backup click on the far left side
             try:
                 page.run_js('document.elementFromPoint(10, 150).click();')
             except:
@@ -237,11 +404,11 @@ def run_single_post_cycle(loop_counter):
             time.sleep(8)
             
         print(f"🎉 BINGO! Post Cycle #{loop_counter} Complete.")
-        return True 
+        return "success"
         
     except Exception as e:
         print(f"⚠️ HOUSTON, MAIN PROBLEM: {e}")
-        return True 
+        return "general_error"
 
     finally:
         # 🔥 ALERT HANDLER & BROWSER CLOSE 🔥
@@ -261,17 +428,28 @@ def run_single_post_cycle(loop_counter):
 # ==========================================
 if __name__ == "__main__":
     loop_counter = 1
+    timeout_fails = 0 # 👈 Yeh naya variable errors count karega
     
     while True:
         print(f"\n{'='*50}")
         print(f"🔄 POST CYCLE NUMBER: {loop_counter}")
         print(f"{'='*50}")
         
-        success = run_single_post_cycle(loop_counter)
+        status = run_single_post_cycle(loop_counter)
         
-        if success is False:
-            print("🛑 Critical Error (like cookies missing). Script stopped.")
-            break
+        if status == "critical_error":
+            print("🛑 Critical Error (like cookies missing). Script completely stopped.")
+            sys.exit(1) # Action ko red mark karke close karega
+            
+        elif status == "timeout_error":
+            timeout_fails += 1
+            print(f"⚠️ Warning: Post box nahi mila. Lagatar fail count: {timeout_fails}/3")
+            if timeout_fails >= 3:
+                print("🛑 3 DAFA FAIL HO GAYA: Action ko band kiya ja raha hai taake Facebook block na kare!")
+                sys.exit(1) # Yeh GitHub Action ko safely kill kar dega
+        else:
+            # Agar successful raha, toh fail count zero kar do
+            timeout_fails = 0
             
         # ==========================================
         # ⏳ RANDOM DELAY BEFORE NEXT CYCLE
@@ -283,6 +461,314 @@ if __name__ == "__main__":
         time.sleep(wait_seconds)
         
         loop_counter += 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# =============== done ===================
+
+
+# import os
+# import json
+# import time
+# import random
+# import requests
+# from DrissionPage import ChromiumPage, ChromiumOptions
+
+# # ==========================================
+# # 📝 DYNAMIC TEXT GENERATOR (DC vs PBKS)
+# # ==========================================
+# DEFAULT_TITLES = "DC vs PBKS Live IPL Clash!,,Catch the Delhi Capitals vs Punjab Kings thriller live,,Live now: DC vs PBKS high-voltage IPL match,,Must-watch IPL action: DC takes on PBKS,,Today's blockbuster: Delhi Capitals vs Punjab Kings Live"
+# DEFAULT_DESC = "Delhi Capitals won the toss and chose to bat first at a blazing CRR of 13.20 – catch every monstrous six, bone-crushing wicket, and boundary blizzard as these two IPL titans collide in match 35 of 70,,Rishabh Pant, David Warner, and Axar Patel lead DC's explosive assassination unit, while Shikhar Dhawan, Liam Livingstone, and Kagiso Rabada bring PBKS's savage firepower – this is not cricket, this is primeval IPL warfare,,Two massive playoff points hang in the balance – will Delhi Capitals' fortress devour another victim, or can Punjab Kings rip apart the script and conquer the capital? Tune in live,,From the deafening Arun Jaitley Stadium atmosphere to the last-over heart-stopping drama, this DC vs PBKS clash is an absolute adrenaline bomb for every true cricket fanatic,,Record-chasing. Playoff dreaming. Pure, unapologetic cricketing bloodsport. Join the live annihilation as Delhi Capitals and Punjab Kings write their names in IPL fire"
+# DEFAULT_TAGS = "#DCvPBKS #IPL2024 #DelhiCapitals #PunjabKings #LiveCricket ,, #IPL #DCvsPBKS #ArunJaitleyStadium #CricketLive ,, #RishabhPant #ShikharDhawan #TATAIPL ,, #IPLWarfare #MatchDay #CricketLovers"
+
+# titles_str = os.environ.get("TITLES") or DEFAULT_TITLES
+# descriptions_str = os.environ.get("DESCRIPTIONS") or DEFAULT_DESC
+# hashtags_str = os.environ.get("HASHTAGS") or DEFAULT_TAGS
+
+# titles = [t.strip() for t in titles_str.split(",,") if t.strip()]
+# descriptions = [d.strip() for d in descriptions_str.split(",,") if d.strip()]
+# hashtags = [h.strip() for h in hashtags_str.split(",,") if h.strip()]
+
+# all_messages = []
+
+# for t in titles:
+#     for d in descriptions:
+#         for h in hashtags:
+#             formatted_text = f"🔥 {t}\n\n⚽ {d}\n\n{h}"
+#             all_messages.append(formatted_text)
+
+# print(f"✅ Total Unique Messages Generated: {len(all_messages)}")
+
+# # ==========================================
+# # 📥 GITHUB SE TOP 3 LATEST IMAGES DOWNLOADER
+# # ==========================================
+# def download_latest_images(count=3):
+#     print(f"🔍 GitHub se top {count} latest images dhoond rahe hain...")
+#     api_url = "https://api.github.com/repos/siddu5991079-ai/twitter-images-daddy-jajaja-3/releases/latest"
+    
+#     github_token = os.environ.get('GITHUB_TOKEN')
+#     headers = {}
+#     if github_token:
+#         headers['Authorization'] = f"token {github_token}"
+    
+#     downloaded_paths = []
+    
+#     try:
+#         response = requests.get(api_url, headers=headers)
+#         if response.status_code == 200:
+#             data = response.json()
+#             assets = data.get("assets", [])
+            
+#             if not assets:
+#                 print("❌ Latest release mein koi image nahi mili.")
+#                 return []
+            
+#             assets.sort(key=lambda x: x["created_at"], reverse=True)
+#             latest_assets = assets[:count]
+            
+#             for i, asset in enumerate(latest_assets):
+#                 download_url = asset["browser_download_url"]
+#                 image_name = f"latest_dynamic_image_{i+1}.png"
+                
+#                 print(f"📥 Download shuru ({i+1}/{len(latest_assets)}): {asset['name']}")
+#                 img_data = requests.get(download_url, headers=headers).content
+#                 with open(image_name, 'wb') as f:
+#                     f.write(img_data)
+                
+#                 downloaded_paths.append(os.path.abspath(image_name))
+            
+#             print(f"✅ {len(downloaded_paths)} Dynamic Images successfully download ho gayin!")
+#             return downloaded_paths
+#         else:
+#             print(f"❌ GitHub API Error: Code {response.status_code} (Reason: {response.text})")
+#             return []
+#     except Exception as e:
+#         print(f"❌ Image download fail: {e}")
+#         return []
+
+# # ==========================================
+# # 🚀 SINGLE POST CYCLE FUNCTION
+# # ==========================================
+# def run_single_post_cycle(loop_counter):
+#     cookies_json = os.environ.get('FB_COOKIES')
+#     if not cookies_json:
+#         print("❌ Error: FB_COOKIES secret nahi mila!")
+#         return False # False means critical error, stop main loop
+
+#     cookies = json.loads(cookies_json)
+
+#     co = ChromiumOptions()
+#     co.set_argument('--no-sandbox')
+#     co.set_argument('--disable-dev-shm-usage')
+#     co.set_argument('--window-size=1920,1080')
+#     co.set_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+#     co.set_argument('--test-type') 
+#     co.set_argument('--disable-infobars') 
+#     co.set_argument('--disable-blink-features=AutomationControlled') 
+#     co.set_argument('--password-store=basic')
+#     co.set_argument('--disable-notifications') 
+    
+#     print("🚀 Script Start... Browser khul raha hai...")
+#     page = ChromiumPage(co)
+
+#     try:
+#         # --- LOGIN PROCESS ---
+#         print("🌐 Facebook par ja rahe hain aur cookies set kar rahe hain...")
+#         page.get("https://www.facebook.com/404") 
+#         time.sleep(3)
+
+#         for cookie in cookies:
+#             if 'facebook.com' in cookie.get('domain', ''):
+#                 page.set.cookies({
+#                     'name': cookie['name'],
+#                     'value': cookie['value'],
+#                     'domain': cookie['domain'],
+#                     'path': cookie.get('path', '/')
+#                 })
+
+#         page.get("https://www.facebook.com/")
+#         if "log in" in page.title.lower() or "login" in page.title.lower():
+#             print("❌ Login Failed! Cookies expire ho chuki hain.")
+#             return False 
+        
+#         print("✅ Login Successful! Bot tayyar hai.")
+#         page.wait.load_start() 
+        
+#         post_box_xpath = 'xpath://div[contains(@aria-label, "What\'s on your mind") or contains(@aria-label, "Create a post")]'
+        
+#         if page.wait.ele_displayed(post_box_xpath, timeout=15):
+#             print("✅ Page loaded! Post box mil gaya.")
+#             time.sleep(3) 
+#         else:
+#             print("❌ Timeout: Post box screen par nahi aaya.")
+#             raise Exception("Post box not found")
+
+#         # --- PHOTOS READY KARNA ---
+#         dynamic_image_paths = download_latest_images(3) 
+        
+#         if not dynamic_image_paths or len(dynamic_image_paths) == 0:
+#             print("❌ ALERT: GitHub images fetch failed. Cycle skip!")
+#             raise Exception("Dynamic images fetch failed")
+
+#         static_image_path = os.path.abspath("1.png")
+#         images_to_upload = []
+#         images_to_upload.extend(dynamic_image_paths)
+#         if os.path.exists(static_image_path):
+#             images_to_upload.append(static_image_path)
+
+#         # --- STEP 1: OPEN POST BOX ---
+#         print("▶️ STEP 1: Post box khol rahe hain...")
+#         create_post_btn = page.ele(post_box_xpath)
+#         if create_post_btn:
+#             create_post_btn.click()
+#             time.sleep(5) 
+#             dialog_box = page.ele('xpath://div[@role="dialog"]', timeout=3)
+#             if not dialog_box:
+#                 create_post_btn.click(by_js=True)
+#                 time.sleep(4)
+        
+#         # --- STEP 2: TYPE TEXT ---
+#         text_box = page.ele('xpath://div[@role="dialog"]//div[@role="textbox" and @contenteditable="true"]', timeout=5)
+#         if text_box:
+#             current_message_index = (loop_counter - 1) % len(all_messages)
+#             text_to_post = all_messages[current_message_index]
+#             text_box.input(text_to_post)
+#             print(f"✅ Text type ho gaya. (Index: {current_message_index + 1})")
+#             time.sleep(3)
+
+#         # --- STEP 3: UPLOAD PHOTOS ---
+#         print(f"▶️ STEP 3: {len(images_to_upload)} photos attach kar rahe hain...")
+#         photo_icon = page.ele('xpath://div[@role="dialog"]//div[@aria-label="Photo/video"]', timeout=5)
+#         if photo_icon:
+#             page.set.upload_files(images_to_upload)
+#             photo_icon.click(by_js=True)
+#             print(f"✅ Photos secretly attached (No Pop-up)! Upload hone ka wait kar rahe hain...")
+#             time.sleep(15) 
+
+#         # --- STEP 4: NEXT BUTTON ---
+#         print("▶️ STEP 4: Next button check kar rahe hain...")
+#         next_btn = page.ele('css:div[aria-label="Next"][role="button"]', timeout=3)
+#         if next_btn:
+#             print("✅ Next button mil gaya, click kar rahe hain...")
+#             next_btn.click(by_js=True)
+#             time.sleep(4)
+
+#         # --- STEP 5: POST BUTTON ---
+#         print("▶️ STEP 5: Final Post button check...")
+#         post_btn = page.ele('xpath://div[@aria-label="Post" and @role="button"]', timeout=5) or \
+#                    page.ele('xpath://span[text()="Post"]/ancestor::div[@role="button"]', timeout=5) or \
+#                    page.ele('xpath://span[text()="Post"]', timeout=5)
+        
+#         if post_btn:
+#             try:
+#                 post_btn.click()
+#             except:
+#                 post_btn.click(by_js=True)
+#             print("✅ Post button clicked! Waiting to see if any popups intercept...")
+#             time.sleep(5) 
+#         else:
+#             print("❌ ERROR: Post button disabled or not found! Skipping cycle.")
+#             raise Exception("Post button not found or not clickable")
+
+#         # --- 🚨 ADVANCED POPUP HUNTER 🚨 ---
+#         print("🕵️‍♂️ Hunting for intercepting popups...")
+#         for i in range(3):
+#             time.sleep(2)
+            
+#             # 1. The "Hosting an event?" popup bypass
+#             publish_original_btn = page.ele('xpath://span[text()="Publish Original Post"]', timeout=2) or \
+#                                    page.ele('text:Publish Original Post', timeout=1)
+#             if publish_original_btn:
+#                 print("🎯 'Event' popup detected! Forcing 'Publish Original Post'...")
+#                 publish_original_btn.click(by_js=True)
+#                 time.sleep(5)
+#                 continue
+                
+#             # 2. Standard popups with an "X" or "Close" button
+#             popup_close_btn = page.ele('css:div[aria-label="Close"][role="button"]', timeout=2)
+#             if popup_close_btn:
+#                 print("🎯 Standard 'Close' popup detected! Clicking 'X'...")
+#                 popup_close_btn.click(by_js=True)
+#                 time.sleep(3)
+#                 continue
+
+#             # 3. Human-like backup click on the far left side
+#             try:
+#                 page.run_js('document.elementFromPoint(10, 150).click();')
+#             except:
+#                 pass
+
+#         # --- FINAL SHARE NOW ---
+#         print("▶️ STEP 6: Share Now check...")
+#         share_now_btn = page.ele('css:div[aria-label="Share now"][role="button"]', timeout=3) or page.ele('xpath://span[text()="Share now" or text()="Publish" or text()="Share"]', timeout=2)
+#         if share_now_btn:
+#             share_now_btn.click(by_js=True)
+#             time.sleep(8)
+            
+#         print(f"🎉 BINGO! Post Cycle #{loop_counter} Complete.")
+#         return True 
+        
+#     except Exception as e:
+#         print(f"⚠️ HOUSTON, MAIN PROBLEM: {e}")
+#         return True 
+
+#     finally:
+#         # 🔥 ALERT HANDLER & BROWSER CLOSE 🔥
+#         print("\nBrowser band kar rahe hain...")
+#         try:
+#             if page.wait.alert(timeout=2):
+#                 page.handle_alert(accept=True)
+#         except:
+#             pass 
+            
+#         page.quit()
+#         os.system("pkill chrome")
+#         print("✅ Browser khatam!")
+
+# # ==========================================
+# # 🔄 MAIN INFINITE LOOP
+# # ==========================================
+# if __name__ == "__main__":
+#     loop_counter = 1
+    
+#     while True:
+#         print(f"\n{'='*50}")
+#         print(f"🔄 POST CYCLE NUMBER: {loop_counter}")
+#         print(f"{'='*50}")
+        
+#         success = run_single_post_cycle(loop_counter)
+        
+#         if success is False:
+#             print("🛑 Critical Error (like cookies missing). Script stopped.")
+#             break
+            
+#         # ==========================================
+#         # ⏳ RANDOM DELAY BEFORE NEXT CYCLE
+#         # ==========================================
+#         wait_seconds = random.randint(180, 300)
+#         mins, secs = divmod(wait_seconds, 60)
+        
+#         print(f"\n⏳ Agli post theek {mins} minute aur {secs} second ke baad hogi.")
+#         time.sleep(wait_seconds)
+        
+#         loop_counter += 1
 
 
 
