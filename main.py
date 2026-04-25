@@ -1,194 +1,201 @@
-# import os
-# import json
-# import time
-# import random
-# from DrissionPage import ChromiumPage, ChromiumOptions
+import os
+import json
+import time
+import random
+import requests
+from DrissionPage import ChromiumPage, ChromiumOptions
 
-# messages = [
-#     "RCB vs GT live match HD mein dekhne ke liye link check karein! 🏏🔥",
-#     "Kohli vs Gill! Match live on my website. Link in first comment! 🚀"
-# ]
+messages = [
+    "RCB vs GT live match HD mein dekhne ke liye link check karein! 🏏🔥",
+    "Kohli vs Gill! Match live on my website. Link in first comment! 🚀"
+]
 
-# def login_and_post():
-#     cookies_json = os.environ.get('FB_COOKIES')
-#     if not cookies_json:
-#         print("❌ Error: FB_COOKIES secret nahi mila!")
-#         return
-
-#     cookies = json.loads(cookies_json)
-
-#     # ==========================================
-#     # 🛡️ BROWSER SETUP (STEALTH & CLEAN LOGS)
-#     # ==========================================
-#     co = ChromiumOptions()
-#     co.set_argument('--no-sandbox')
-#     co.set_argument('--disable-dev-shm-usage')
-#     co.set_argument('--window-size=1920,1080')
-#     co.set_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+# ==========================================
+# 📥 GITHUB SE LATEST IMAGE DOWNLOADER
+# ==========================================
+def download_latest_image():
+    print("🔍 GitHub se latest image dhoond rahe hain...")
+    api_url = "https://api.github.com/repos/siddu5991079-ai/twitter-images-daddy-jajaja-3/releases/tags/live-match-updates"
     
-#     co.set_argument('--test-type') 
-#     co.set_argument('--disable-infobars') 
-#     co.set_argument('--disable-blink-features=AutomationControlled') 
-#     co.set_argument('--password-store=basic')
-#     co.set_argument('--disable-notifications') 
-    
-#     # 🛑 YEH 2 LINES SARA KACHRA (WARNINGS) SAAF KAR DENGY 🛑
-#     co.set_argument('--log-level=3') # Sirf Fatal errors show karega, baqi sab mute
-#     co.set_argument('--disable-logging') # System level console logs ko disable karega
-    
-#     print("\n🚀 Script Start... Browser khul raha hai...")
-#     page = ChromiumPage(co)
-
-#     try:
-#         # ==========================================
-#         # LOGIN PROCESS
-#         # ==========================================
-#         print("🌐 Facebook par ja rahe hain...")
-#         page.get("https://www.facebook.com/404") 
-#         time.sleep(3)
-
-#         for cookie in cookies:
-#             if 'facebook.com' in cookie.get('domain', ''):
-#                 page.set.cookies({
-#                     'name': cookie['name'],
-#                     'value': cookie['value'],
-#                     'domain': cookie['domain'],
-#                     'path': cookie.get('path', '/')
-#                 })
-
-#         page.get("https://www.facebook.com/")
-        
-#         if "log in" in page.title.lower() or "login" in page.title.lower():
-#             print("❌ Login Failed! Cookies expire ho chuki hain.")
-#             return
-        
-#         print("✅ Login Successful!")
-
-#         # ==========================================
-#         # 🧠 SMART WAIT: PAGE LOAD CHECK
-#         # ==========================================
-#         print("⏳ Wait kar rahe hain taake page aur post box puri tarah load ho jaye...")
-#         page.wait.load_start() 
-        
-#         post_box_xpath = 'xpath://div[contains(@aria-label, "What\'s on your mind") or contains(@aria-label, "Create a post")]'
-        
-#         if page.wait.ele_displayed(post_box_xpath, timeout=15):
-#             print("✅ Page 100% loaded! Post box screen par aagaya hai.")
-#             time.sleep(2) 
-#         else:
-#             print("❌ Timeout: Post box screen par nahi aaya.")
-#             return
-
-#         image_path = os.path.abspath("1.png")
-
-#         # ==========================================
-#         # STEP 1: CREATE POST POPUP KHOLNA
-#         # ==========================================
-#         print("▶️ STEP 1: 'What's on your mind?' wale box par click kar rahe hain...")
-#         create_post_btn = page.ele(post_box_xpath)
-        
-#         if create_post_btn:
-#             create_post_btn.click()
-#             time.sleep(5) 
+    try:
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            data = response.json()
+            assets = data.get("assets", [])
             
-#             dialog_box = page.ele('xpath://div[@role="dialog"]', timeout=3)
-#             if not dialog_box:
-#                 print("⚠️ Normal click se popup nahi khula! JS click try kar rahe hain...")
-#                 create_post_btn.click(by_js=True)
-#                 time.sleep(4)
+            if not assets:
+                print("❌ Release mein koi image nahi mili.")
+                return None
+            
+            assets.sort(key=lambda x: x["created_at"], reverse=True)
+            latest_asset = assets[0]
+            
+            download_url = latest_asset["browser_download_url"]
+            image_name = "latest_dynamic_image.png"
+            
+            print(f"📥 Download shuru: {latest_asset['name']}")
+            img_data = requests.get(download_url).content
+            with open(image_name, 'wb') as f:
+                f.write(img_data)
+            
+            print("✅ Image successfully download ho gayi!")
+            return os.path.abspath(image_name)
+        else:
+            print(f"❌ GitHub API Error: Code {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"❌ Image download fail: {e}")
+        return None
+
+def login_and_post():
+    cookies_json = os.environ.get('FB_COOKIES')
+    if not cookies_json:
+        print("❌ Error: FB_COOKIES secret nahi mila!")
+        return
+
+    cookies = json.loads(cookies_json)
+
+    # ==========================================
+    # 🛡️ BROWSER SETUP (STEALTH MODE)
+    # ==========================================
+    co = ChromiumOptions()
+    co.set_argument('--no-sandbox')
+    co.set_argument('--disable-dev-shm-usage')
+    co.set_argument('--window-size=1920,1080')
+    co.set_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+    
+    co.set_argument('--test-type') 
+    co.set_argument('--disable-infobars') 
+    co.set_argument('--disable-blink-features=AutomationControlled') 
+    co.set_argument('--password-store=basic')
+    co.set_argument('--disable-notifications') 
+    
+    print("🚀 Script Start... Browser khul raha hai...")
+    page = ChromiumPage(co)
+
+    try:
+        print("🌐 Facebook par ja rahe hain...")
+        page.get("https://www.facebook.com/404") 
+        time.sleep(3)
+
+        for cookie in cookies:
+            if 'facebook.com' in cookie.get('domain', ''):
+                page.set.cookies({
+                    'name': cookie['name'],
+                    'value': cookie['value'],
+                    'domain': cookie['domain'],
+                    'path': cookie.get('path', '/')
+                })
+
+        page.get("https://www.facebook.com/")
+        
+        if "log in" in page.title.lower() or "login" in page.title.lower():
+            print("❌ Login Failed! Cookies expire ho chuki hain.")
+            return
+        
+        print("✅ Login Successful!")
+
+        print("⏳ Wait kar rahe hain taake page aur post box puri tarah load ho jaye...")
+        page.wait.load_start() 
+        
+        post_box_xpath = 'xpath://div[contains(@aria-label, "What\'s on your mind") or contains(@aria-label, "Create a post")]'
+        
+        if page.wait.ele_displayed(post_box_xpath, timeout=15):
+            print("✅ Page 100% loaded! Post box screen par aagaya hai.")
+            time.sleep(2) 
+        else:
+            print("❌ Timeout: Post box screen par nahi aaya.")
+            return
+
+        # Naya code call ho raha hai yahan
+        image_path = download_latest_image()
+
+        print("▶️ STEP 1: 'What's on your mind?' wale box par click kar rahe hain...")
+        create_post_btn = page.ele(post_box_xpath)
+        
+        if create_post_btn:
+            create_post_btn.click()
+            time.sleep(5) 
+            
+            dialog_box = page.ele('xpath://div[@role="dialog"]', timeout=3)
+            if not dialog_box:
+                print("⚠️ Normal click se popup nahi khula! JS click try kar rahe hain...")
+                create_post_btn.click(by_js=True)
+                time.sleep(4)
                 
-#                 if not page.ele('xpath://div[@role="dialog"]'):
-#                     print("❌ ERROR: Popup open nahi ho raha! Script rok di gayi hai.")
-#                     return
-#         else:
-#             print("❌ Box select nahi ho saka.")
-#             return
+                if not page.ele('xpath://div[@role="dialog"]'):
+                    print("❌ ERROR: Popup open nahi ho raha! Script rok di gayi hai.")
+                    return
+        else:
+            print("❌ Box select nahi ho saka.")
+            return
 
-#         # ==========================================
-#         # STEP 2: TEXT TYPE KARNA
-#         # ==========================================
-#         print("▶️ STEP 2: Text box mein likh rahe hain...")
-#         text_box = page.ele('xpath://div[@role="dialog"]//div[@role="textbox" and @contenteditable="true"]', timeout=5)
-#         if text_box:
-#             text = random.choice(messages)
-#             hashtags = " #RCBvGT #CricketLive"
-#             text_box.input(text + hashtags)
-#             print("✅ Text type ho gaya.")
-#             time.sleep(3)
-#         else:
-#             print("❌ Text box dialog mein nahi mila.")
-#             return
+        print("▶️ STEP 2: Text box mein likh rahe hain...")
+        text_box = page.ele('xpath://div[@role="dialog"]//div[@role="textbox" and @contenteditable="true"]', timeout=5)
+        if text_box:
+            text = random.choice(messages)
+            hashtags = " #RCBvGT #CricketLive"
+            text_box.input(text + hashtags)
+            print("✅ Text type ho gaya.")
+            time.sleep(3)
+        else:
+            print("❌ Text box dialog mein nahi mila.")
+            return
 
-#         # ==========================================
-#         # STEP 3: IMAGE UPLOAD
-#         # ==========================================
-#         print("▶️ STEP 3: Photo upload kar rahe hain...")
-#         photo_icon = page.ele('xpath://div[@role="dialog"]//div[@aria-label="Photo/video"]', timeout=5)
-#         if photo_icon:
-#             photo_icon.click(by_js=True)
-#             time.sleep(2)
+        print("▶️ STEP 3: Photo upload kar rahe hain...")
+        photo_icon = page.ele('xpath://div[@role="dialog"]//div[@aria-label="Photo/video"]', timeout=5)
+        if photo_icon:
+            photo_icon.click(by_js=True)
+            time.sleep(2)
             
-#             if os.path.exists(image_path):
-#                 file_input = page.ele('xpath://div[@role="dialog"]//input[@type="file"]')
-#                 if file_input:
-#                     file_input.input(image_path)
-#                     print("✅ Photo attached.")
-#                     time.sleep(6)
+            if image_path and os.path.exists(image_path):
+                file_input = page.ele('xpath://div[@role="dialog"]//input[@type="file"]')
+                if file_input:
+                    file_input.input(image_path)
+                    print(f"✅ Photo attached: {image_path}")
+                    time.sleep(6)
 
-#         # ==========================================
-#         # STEP 4: NEXT BUTTON
-#         # ==========================================
-#         print("▶️ STEP 4: Next button daba rahe hain...")
-#         next_btn = page.ele('css:div[aria-label="Next"][role="button"]', timeout=3)
-#         if next_btn:
-#             next_btn.click(by_js=True)
-#             time.sleep(4)
+        print("▶️ STEP 4: Next button daba rahe hain...")
+        next_btn = page.ele('css:div[aria-label="Next"][role="button"]', timeout=3)
+        if next_btn:
+            next_btn.click(by_js=True)
+            time.sleep(4)
 
-#         # ==========================================
-#         # STEP 4.5: POST BUTTON
-#         # ==========================================
-#         print("▶️ STEP 4.5: Post button ya popup check kar rahe hain...")
-#         post_btn = page.ele('xpath://div[@aria-label="Post" and @role="button"]', timeout=3) or page.ele('xpath://span[text()="Post"]', timeout=2)
-#         if post_btn:
-#             post_btn.click(by_js=True)
-#             print("✅ 'Post' button daba diya.")
-#         else:
-#             close_early = page.ele('css:div[aria-label="Close"][role="button"]', timeout=3)
-#             if close_early:
-#                 close_early.click(by_js=True)
+        print("▶️ STEP 4.5: Post button ya popup check kar rahe hain...")
+        post_btn = page.ele('xpath://div[@aria-label="Post" and @role="button"]', timeout=3) or page.ele('xpath://span[text()="Post"]', timeout=2)
+        if post_btn:
+            post_btn.click(by_js=True)
+            print("✅ 'Post' button daba diya.")
+        else:
+            close_early = page.ele('css:div[aria-label="Close"][role="button"]', timeout=3)
+            if close_early:
+                close_early.click(by_js=True)
 
-#         # ==========================================
-#         # STEP 4.8: ZIDDI POPUP HUNTER
-#         # ==========================================
-#         for i in range(2):
-#             time.sleep(6) 
-#             popup_close_btn = page.ele('css:div[aria-label="Close"][role="button"]', timeout=3)
-#             if popup_close_btn:
-#                 popup_close_btn.click(by_js=True)
+        for i in range(2):
+            time.sleep(6) 
+            popup_close_btn = page.ele('css:div[aria-label="Close"][role="button"]', timeout=3)
+            if popup_close_btn:
+                popup_close_btn.click(by_js=True)
 
-#         # ==========================================
-#         # STEP 5: FINAL "SHARE NOW" BUTTON
-#         # ==========================================
-#         print("▶️ STEP 5: Final Share button dhoond rahe hain...")
-#         share_now_btn = page.ele('css:div[aria-label="Share now"][role="button"]', timeout=3) or page.ele('xpath://span[text()="Share now" or text()="Publish" or text()="Share"]', timeout=2)
-#         if share_now_btn:
-#             share_now_btn.click(by_js=True)
-#             time.sleep(8)
-#             print("🎉 BINGO! Facebook Post 100% Successful.\n")
+        print("▶️ STEP 5: Final Share button dhoond rahe hain...")
+        share_now_btn = page.ele('css:div[aria-label="Share now"][role="button"]', timeout=3) or page.ele('xpath://span[text()="Share now" or text()="Publish" or text()="Share"]', timeout=2)
+        if share_now_btn:
+            share_now_btn.click(by_js=True)
+            time.sleep(8)
+            print("🎉 BINGO! Facebook Post 100% Successful.")
         
-#         time.sleep(5) 
+        time.sleep(5) 
 
-#     except Exception as e:
-#         print(f"⚠️ HOUSTON, WE HAVE A PROBLEM: {e}")
-#     finally:
-#         print("Browser band kar rahe hain...")
-#         page.quit()
-#         os.system("pkill chrome")
-#         print("✅ Browser successfully khatam ho gaya!")
+    except Exception as e:
+        print(f"⚠️ HOUSTON, WE HAVE A PROBLEM: {e}")
+    finally:
+        print("\nBrowser band kar rahe hain...")
+        page.quit()
+        os.system("pkill chrome")
+        print("✅ Browser successfully khatam ho gaya!")
 
-# if __name__ == "__main__":
-#     login_and_post()
-
+if __name__ == "__main__":
+    login_and_post()
 
 
 
