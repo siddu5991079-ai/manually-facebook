@@ -426,6 +426,9 @@ def run_single_post_cycle(loop_counter):
 # ==========================================
 # 🔄 MAIN INFINITE LOOP
 # ==========================================
+# ==========================================
+# 🔄 MAIN INFINITE LOOP
+# ==========================================
 if __name__ == "__main__":
     loop_counter = 1
     timeout_fails = 0 # 👈 Yeh naya variable errors count karega
@@ -452,15 +455,53 @@ if __name__ == "__main__":
             timeout_fails = 0
             
         # ==========================================
-        # ⏳ RANDOM DELAY BEFORE NEXT CYCLE
+        # ⏳ RANDOM DELAY BEFORE NEXT CYCLE (UPDATED)
         # ==========================================
-        wait_seconds = random.randint(180, 300)
+        # Naya Time: 90 seconds (1:30 min) se le kar 120 seconds (2:00 min) tak
+        wait_seconds = random.randint(90, 120)
         mins, secs = divmod(wait_seconds, 60)
         
         print(f"\n⏳ Agli post theek {mins} minute aur {secs} second ke baad hogi.")
         time.sleep(wait_seconds)
         
         loop_counter += 1
+
+
+# if __name__ == "__main__":
+#     loop_counter = 1
+#     timeout_fails = 0 # 👈 Yeh naya variable errors count karega
+    
+#     while True:
+#         print(f"\n{'='*50}")
+#         print(f"🔄 POST CYCLE NUMBER: {loop_counter}")
+#         print(f"{'='*50}")
+        
+#         status = run_single_post_cycle(loop_counter)
+        
+#         if status == "critical_error":
+#             print("🛑 Critical Error (like cookies missing). Script completely stopped.")
+#             sys.exit(1) # Action ko red mark karke close karega
+            
+#         elif status == "timeout_error":
+#             timeout_fails += 1
+#             print(f"⚠️ Warning: Post box nahi mila. Lagatar fail count: {timeout_fails}/3")
+#             if timeout_fails >= 3:
+#                 print("🛑 3 DAFA FAIL HO GAYA: Action ko band kiya ja raha hai taake Facebook block na kare!")
+#                 sys.exit(1) # Yeh GitHub Action ko safely kill kar dega
+#         else:
+#             # Agar successful raha, toh fail count zero kar do
+#             timeout_fails = 0
+            
+#         # ==========================================
+#         # ⏳ RANDOM DELAY BEFORE NEXT CYCLE
+#         # ==========================================
+#         wait_seconds = random.randint(180, 300)
+#         mins, secs = divmod(wait_seconds, 60)
+        
+#         print(f"\n⏳ Agli post theek {mins} minute aur {secs} second ke baad hogi.")
+#         time.sleep(wait_seconds)
+        
+#         loop_counter += 1
 
 
 
