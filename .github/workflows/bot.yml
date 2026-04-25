@@ -1,10 +1,14 @@
 
-name: FB Auto Bot (DrissionPage + Video)
+name: FB Auto Bot (Video to Release)
 
 on:
   workflow_dispatch: 
   # schedule:
   #   - cron: '0 5 * * *' 
+
+# ⚠️ NAYA: GitHub ko "Release" banane ki permission dena zaroori hai
+permissions:
+  contents: write
 
 jobs:
   run-bot:
@@ -23,34 +27,46 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y xvfb ffmpeg
-          # DrissionPage ki installation
           pip install DrissionPage
 
       - name: Run Script & Record Video 🎥
         env:
           FB_COOKIES: ${{ secrets.FB_COOKIES }} 
         run: |
-          # 1. Xvfb se ek virtual screen (Display 99) create karein 1920x1080 resolution pe
+          # 1. Virtual screen setup
           Xvfb :99 -screen 0 1920x1080x24 &
           export DISPLAY=:99
           
-          # 2. FFmpeg se us virtual screen ki background recording start karein
+          # 2. FFmpeg recording start
           ffmpeg -y -video_size 1920x1080 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -preset ultrafast -pix_fmt yuv420p output_video.mp4 > /dev/null 2>&1 &
           FFMPEG_PID=$!
           
           # 3. Apna DrissionPage wala code run karein
           python main.py
           
-          # 4. Script khatam hone k baad thora wait karein aur recording safely band karein
+          # 4. Script khatam hone k baad recording safely band karein
           sleep 3
           kill -INT $FFMPEG_PID
-          sleep 2 # FFmpeg ko file save karne ka time dena zaroori hai
+          sleep 2
 
-      - name: Upload Video Saboot
-        uses: actions/upload-artifact@v4
-        with:
-          name: FB-Video-Proof
-          path: output_video.mp4
+      # ==========================================
+      # 🚀 NAYA: VIDEO KO GITHUB RELEASES MEIN UPLOAD KARNA
+      # ==========================================
+      - name: Upload Video to GitHub Releases
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Yeh token GitHub khud provide karta hai
+        run: |
+          # Ek unique tag name banayen taake har video alag save ho
+          TAG_NAME="FB-Post-$(date +'%Y%m%d-%H%M%S')"
+          
+          echo "Uploading output_video.mp4 to GitHub Releases..."
+          
+          # GitHub CLI command video ko direct release mein push karne ke liye
+          gh release create "$TAG_NAME" output_video.mp4 \
+            --title "Post Upload Saboot: $TAG_NAME" \
+            --notes "DrissionPage ne successfully Facebook par post kar di hai. Video attached hai."
+          
+          echo "✅ Video successfully Releases mein save ho gayi!"
 
 
 
