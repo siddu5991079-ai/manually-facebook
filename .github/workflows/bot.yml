@@ -1,3 +1,4 @@
+
 name: FB Auto Bot (Video to Release)
 
 on:
@@ -6,6 +7,10 @@ on:
       fb_cookies:
         description: '🍪 Paste Facebook Cookies Here (Raw JSON)'
         required: true
+      image_prefix:
+        description: 'Image Prefix (e.g., 1, 2, LiveMatch)' # <-- NEW INPUT HERE
+        required: true
+        default: '1'
       titles:
         description: 'Titles (separated by ,,)'
         required: true
@@ -43,8 +48,8 @@ jobs:
 
       - name: Run Script & Record Video 🎥
         env:
-          # ✅ NAYA FIX: Ab cookies GitHub Secrets ke bajaye direct aapke Input Box se aayengi
           FB_COOKIES: ${{ inputs.fb_cookies }} 
+          IMAGE_PREFIX: ${{ inputs.image_prefix }} # <-- NEW ENV VARIABLE PASSED TO PYTHON
           PYTHONUNBUFFERED: 1  
           TITLES: ${{ inputs.titles }}             
           DESCRIPTIONS: ${{ inputs.descriptions }} 
@@ -96,6 +101,311 @@ jobs:
           else
             echo "❌ Video file nahi mili."
           fi
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ==================== yeh bikul teek hai bas eek kaam karna thaa k iss mei multiple images measn differnent images koo uplaod kary e.gipl,psl,football,opper wala code iss ko banaany mei try karty hai  ==================
+
+
+
+
+
+# name: FB Auto Bot (Video to Release)
+
+# on:
+#   workflow_dispatch: 
+#     inputs:
+#       fb_cookies:
+#         description: '🍪 Paste Facebook Cookies Here (Raw JSON)'
+#         required: true
+#       titles:
+#         description: 'Titles (separated by ,,)'
+#         required: true
+#         default: "Real Oviedo vs Villarreal live: LaLiga midnight warzone today,,Watch live: Real Oviedo hunt Villarreal in tonight's Spanish survival epic,,Live now: Real Oviedo vs Villarreal – giants collide under the stars,,LaLiga live: Oviedo host Villarreal in a must-watch destruction at 12:30 am,,Today's live match: Real Oviedo vs Villarreal – all the chaos from Carlos Tartiere"
+#       descriptions:
+#         description: 'Descriptions (separated by ,,)'
+#         required: true
+#         default: "The clock strikes midnight and Spanish football explodes – catch every bone-rattling tackle, divine save, and match-winning goal as Real Oviedo and Villarreal tear each other apart,,Borja Bastón, Santi Cazorla, and Lucas Ahijado lead Oviedo's furious rebellion, while Gerard Moreno, Álex Baena, and Dani Parejo bring Villarreal's Yellow Submarine artillery – this is primeval LaLiga warfare,,European dreams meet relegation desperation – will Oviedo's fortress devour another giant, or can Villarreal's class silence the Asturian earthquake? Tune in live at 12:30 am,,From the thunderous Carlos Tartiere atmosphere to the tactical assassination on the pitch, this Real Oviedo vs Villarreal clash is pure adrenaline for every football fanatic,,History. Pride. Survival. Glory. Join the live destruction as Real Oviedo and Villarreal write their names in Spanish football flames"
+#       hashtags:
+#         description: 'Hashtags (separated by ,,)'
+#         required: true
+#         default: "#RealOviedo #Villarreal #LaLiga #MidnightWar ,, #Oviedo #VillarrealCF #CarlosTartiere #LiveFootball ,, #BorjaBaston #GerardMoreno #Cazorla #Parejo ,, #RealOviedoVsVillarreal #SpanishWarfare #LaLigaNights #MatchDay ,, #AsturianEarthquake #YellowSubmarine #watchlive #bulbul4u-live"
+
+# permissions:
+#   contents: write
+
+# jobs:
+#   run-bot:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Code download kar raha hai...
+#         uses: actions/checkout@v4
+
+#       - name: Python setup kar raha hai...
+#         uses: actions/setup-python@v5
+#         with:
+#           python-version: '3.12' 
+
+#       - name: System Dependencies (Xvfb & FFmpeg) install kar raha hai...
+#         run: |
+#           sudo apt-get update
+#           sudo apt-get install -y xvfb ffmpeg
+#           pip install DrissionPage requests
+
+#       - name: Run Script & Record Video 🎥
+#         env:
+#           # ✅ NAYA FIX: Ab cookies GitHub Secrets ke bajaye direct aapke Input Box se aayengi
+#           FB_COOKIES: ${{ inputs.fb_cookies }} 
+#           PYTHONUNBUFFERED: 1  
+#           TITLES: ${{ inputs.titles }}             
+#           DESCRIPTIONS: ${{ inputs.descriptions }} 
+#           HASHTAGS: ${{ inputs.hashtags }}         
+#         run: |
+#           # 1. Virtual screen setup
+#           Xvfb :99 -screen 0 1920x1080x24 &
+#           export DISPLAY=:99
+          
+#           # 2. FFmpeg recording start
+#           ffmpeg -y -video_size 1920x1080 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -preset ultrafast -pix_fmt yuv420p output_video.mp4 > /dev/null 2>&1 &
+          
+#           # 💡 FFmpeg ka process ID ek file mein save kar lo
+#           echo $! > ffmpeg.pid
+          
+#           # 3. Apna DrissionPage wala code run karein
+#           python -u main.py
+
+#       # ==========================================
+#       # 🛑 SAFELY STOP RECORDING (Even if canceled)
+#       # ==========================================
+#       - name: Safely Finalize Video Recording 🛑
+#         if: always() 
+#         run: |
+#           if [ -f "ffmpeg.pid" ]; then
+#             echo "🛑 Script ruk gayi hai. FFmpeg ko safely band kar rahe hain taake video corrupt na ho..."
+#             kill -INT $(cat ffmpeg.pid)
+#             sleep 3 
+#           else
+#             echo "⚠️ Recording shuru hi nahi hui thi."
+#           fi
+
+#       # ==========================================
+#       # 🚀 VIDEO KO GITHUB RELEASES MEIN UPLOAD KARNA
+#       # ==========================================
+#       - name: Upload Video to GitHub Releases
+#         if: always() 
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+#         run: |
+#           TAG_NAME="FB-Post-$(date +'%Y%m%d-%H%M%S')"
+#           echo "Uploading output_video.mp4 to GitHub Releases..."
+          
+#           if [ -f "output_video.mp4" ]; then
+#             gh release create "$TAG_NAME" output_video.mp4 \
+#               --title "Post Upload Saboot: $TAG_NAME" \
+#               --notes "Automated run ka video evidence."
+#             echo "✅ Video successfully Releases mein save ho gayi! Ab yeh perfectly play hogi."
+#           else
+#             echo "❌ Video file nahi mili."
+#           fi
 
 
 
