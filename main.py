@@ -1,5 +1,3 @@
-
-
 import os
 import sys
 import json
@@ -336,11 +334,25 @@ if __name__ == "__main__":
             else:
                 timeout_fails = 0
                 
-            wait_seconds = random.randint(90, 120)
-            mins, secs = divmod(wait_seconds, 60)
+            # --- NEW TIMING LOGIC START ---
             
-            print(f"\n⏳ Agli post theek {mins} minute aur {secs} second ke baad hogi.")
-            time.sleep(wait_seconds)
+            # Base wait time: 5 to 10 minutes (300 to 600 seconds)
+            base_wait_seconds = random.randint(300, 600)
+            
+            # Har 3 post ke baad extra 7 minutes (420 seconds) add karo
+            if loop_counter % 3 == 0:
+                extra_wait = 420
+                total_wait_seconds = base_wait_seconds + extra_wait
+                mins, secs = divmod(total_wait_seconds, 60)
+                print(f"\n🛑 3 Posts complete! Extra 7 min wait added. Agli post theek {mins} minute aur {secs} second ke baad hogi.")
+            else:
+                total_wait_seconds = base_wait_seconds
+                mins, secs = divmod(total_wait_seconds, 60)
+                print(f"\n⏳ Agli post theek {mins} minute aur {secs} second ke baad hogi.")
+            
+            time.sleep(total_wait_seconds)
+            
+            # --- NEW TIMING LOGIC END ---
             
             loop_counter += 1
             
@@ -355,6 +367,377 @@ if __name__ == "__main__":
         page.quit()
         os.system("pkill chrome")
         print("✅ Script successfully 6-hour limit ke qareeb ruk gayi. Goodbye!")
+
+
+
+
+
+
+
+
+
+
+
+
+# har 1:30 to 2min k darbeen post karta hai
+
+
+
+# import os
+# import sys
+# import json
+# import time
+# import random
+# import requests
+# from datetime import datetime, timedelta
+# from DrissionPage import ChromiumPage, ChromiumOptions
+
+# # ==========================================
+# # 🍪 GET COOKIES FROM GITHUB ACTION INPUT
+# # ==========================================
+# cookies_env = os.environ.get("FB_COOKIES", "").strip()
+
+# if not cookies_env:
+#     print("🛑 ERROR: Cookies nahi mili! GitHub Action chalate waqt 'FB Cookies' box mein JSON paste karein.")
+#     sys.exit(1)
+
+# try:
+#     # Magic Fix: Agar user ghalti se Python wale True/False daal de, toh usko valid JSON true/false mein badal do
+#     cookies_env = cookies_env.replace("True", "true").replace("False", "false").replace("'", '"')
+#     STATIC_COOKIES = json.loads(cookies_env)
+# except Exception as e:
+#     print(f"🛑 ERROR: Cookies ka format ghalat hai. Please valid JSON paste karein. Details: {e}")
+#     sys.exit(1)
+
+# # ==========================================
+# # 📝 DYNAMIC TEXT GENERATOR ARRAYS
+# # ==========================================
+# DEFAULT_TITLES = "DC vs PBKS Live IPL Clash!,,Catch the Delhi Capitals vs Punjab Kings thriller live,,Live now: DC vs PBKS high-voltage IPL match,,Must-watch IPL action: DC takes on PBKS,,Today's blockbuster: Delhi Capitals vs Punjab Kings Live"
+# DEFAULT_DESC = "Delhi Capitals won the toss and chose to bat first at a blazing CRR of 13.20 – catch every monstrous six, bone-crushing wicket, and boundary blizzard as these two IPL titans collide in match 35 of 70,,Rishabh Pant, David Warner, and Axar Patel lead DC's explosive assassination unit, while Shikhar Dhawan, Liam Livingstone, and Kagiso Rabada bring PBKS's savage firepower – this is not cricket, this is primeval IPL warfare,,Two massive playoff points hang in the balance – will Delhi Capitals' fortress devour another victim, or can Punjab Kings rip apart the script and conquer the capital? Tune in live,,From the deafening Arun Jaitley Stadium atmosphere to the last-over heart-stopping drama, this DC vs PBKS clash is an absolute adrenaline bomb for every true cricket fanatic,,Record-chasing. Playoff dreaming. Pure, unapologetic cricketing bloodsport. Join the live annihilation as Delhi Capitals and Punjab Kings write their names in IPL fire"
+# DEFAULT_TAGS = "#DCvPBKS #IPL2024 #DelhiCapitals #PunjabKings #LiveCricket ,, #IPL #DCvsPBKS #ArunJaitleyStadium #CricketLive ,, #RishabhPant #ShikharDhawan #TATAIPL ,, #IPLWarfare #MatchDay #CricketLovers"
+
+# titles_str = os.environ.get("TITLES") or DEFAULT_TITLES
+# descriptions_str = os.environ.get("DESCRIPTIONS") or DEFAULT_DESC
+# hashtags_str = os.environ.get("HASHTAGS") or DEFAULT_TAGS
+
+# titles = [t.strip() for t in titles_str.split(",,") if t.strip()]
+# descriptions = [d.strip() for d in descriptions_str.split(",,") if d.strip()]
+# hashtags = [h.strip() for h in hashtags_str.split(",,") if h.strip()]
+
+# def get_dynamic_message(post_index):
+#     round_length = max(len(titles), len(descriptions))
+#     current_step = (post_index - 1) % round_length
+#     round_number = (post_index - 1) // round_length
+    
+#     title_forward = True
+#     desc_forward = True
+    
+#     if round_number % 4 == 1:
+#         desc_forward = False
+#     elif round_number % 4 == 2:
+#         title_forward = False
+#     elif round_number % 4 == 3:
+#         title_forward = False
+#         desc_forward = False
+
+#     t_idx = current_step if title_forward else (len(titles) - 1 - (current_step % len(titles)))
+#     d_idx = current_step if desc_forward else (len(descriptions) - 1 - (current_step % len(descriptions)))
+    
+#     t_idx = t_idx % len(titles)
+#     d_idx = d_idx % len(descriptions)
+    
+#     t = titles[t_idx]
+#     d = descriptions[d_idx]
+#     h = random.choice(hashtags) 
+    
+#     print(f"🔄 Text Phase: Round {round_number} (T_idx: {t_idx}, D_idx: {d_idx})")
+#     return f"🔥 {t}\n\n⚽ {d}\n\n{h}"
+
+# def download_latest_images(count=3):
+#     image_prefix = os.environ.get("IMAGE_PREFIX", "").strip() # <-- NEW: Prefix get kar rahe hain
+#     print(f"🔍 GitHub se top {count} latest images dhoond rahe hain (Prefix: '{image_prefix}')...")
+    
+#     api_url = "https://api.github.com/repos/siddu5991079-ai/twitter-images-daddy-jajaja-3/releases/latest"
+    
+#     github_token = os.environ.get('GITHUB_TOKEN')
+#     headers = {}
+#     if github_token:
+#         headers['Authorization'] = f"token {github_token}"
+    
+#     downloaded_paths = []
+    
+#     try:
+#         response = requests.get(api_url, headers=headers)
+#         if response.status_code == 200:
+#             data = response.json()
+#             assets = data.get("assets", [])
+            
+#             if not assets:
+#                 print("❌ Latest release mein koi image nahi mili.")
+#                 return []
+            
+#             # 👇 NEW LOGIC: Sirf un images ko rakho jo prefix se shuru hoti hain
+#             if image_prefix:
+#                 assets = [a for a in assets if a["name"].startswith(image_prefix)]
+            
+#             if not assets:
+#                 print(f"❌ '{image_prefix}' prefix wali koi image release mein nahi mili.")
+#                 return []
+            
+#             # Time ke hisaab se sort karo aur latest uthao
+#             assets.sort(key=lambda x: x["created_at"], reverse=True)
+#             latest_assets = assets[:count]
+            
+#             for i, asset in enumerate(latest_assets):
+#                 download_url = asset["browser_download_url"]
+#                 image_name = f"latest_dynamic_image_{i+1}.png"
+                
+#                 print(f"📥 Download shuru ({i+1}/{len(latest_assets)}): {asset['name']}")
+#                 img_data = requests.get(download_url, headers=headers).content
+#                 with open(image_name, 'wb') as f:
+#                     f.write(img_data)
+                
+#                 downloaded_paths.append(os.path.abspath(image_name))
+            
+#             print(f"✅ {len(downloaded_paths)} Dynamic Images successfully download ho gayin!")
+#             return downloaded_paths
+#         else:
+#             print(f"❌ GitHub API Error: Code {response.status_code} (Reason: {response.text})")
+#             return []
+#     except Exception as e:
+#         print(f"❌ Image download fail: {e}")
+#         return []
+
+# def initial_login(page):
+#     print("🌐 Facebook par ja rahe hain aur cookies set kar rahe hain...")
+#     page.get("https://www.facebook.com/404") 
+#     time.sleep(3)
+
+#     for cookie in STATIC_COOKIES:
+#         if 'facebook.com' in cookie.get('domain', ''):
+#             page.set.cookies({
+#                 'name': cookie['name'],
+#                 'value': cookie['value'],
+#                 'domain': cookie['domain'],
+#                 'path': cookie.get('path', '/')
+#             })
+
+#     page.get("https://www.facebook.com/")
+#     if "log in" in page.title.lower() or "login" in page.title.lower():
+#         print("❌ Login Failed! Cookies expire ho chuki hain.")
+#         return False
+    
+#     print("✅ Login Successful! Browser ready hai.")
+#     return True
+
+# def run_single_post_cycle(page, loop_counter):
+#     try:
+#         if "facebook.com" not in page.url or "watch" in page.url or "groups" in page.url:
+#             page.get("https://www.facebook.com/")
+        
+#         page.wait.load_start() 
+#         post_box_xpath = 'xpath://div[contains(@aria-label, "What\'s on your mind") or contains(@aria-label, "Create a post")]'
+        
+#         if page.wait.ele_displayed(post_box_xpath, timeout=15):
+#             print("✅ Page loaded! Post box mil gaya.")
+#             time.sleep(3) 
+#         else:
+#             print("⚠️ Post box nahi mila. Refresh kar rahe hain...")
+#             page.refresh()
+#             time.sleep(5)
+#             if not page.wait.ele_displayed(post_box_xpath, timeout=15):
+#                 print("❌ Timeout: Post box screen par nahi aaya refresh ke baad bhi.")
+#                 return "timeout_error" 
+
+#         dynamic_image_paths = download_latest_images(3) 
+        
+#         if not dynamic_image_paths or len(dynamic_image_paths) == 0:
+#             print("❌ ALERT: GitHub images fetch failed. Cycle skip!")
+#             raise Exception("Dynamic images fetch failed")
+
+#         static_image_path = os.path.abspath("1.png")
+#         images_to_upload = []
+#         images_to_upload.extend(dynamic_image_paths)
+#         if os.path.exists(static_image_path):
+#             images_to_upload.append(static_image_path)
+
+#         print("▶️ STEP 1: Post box khol rahe hain...")
+#         create_post_btn = page.ele(post_box_xpath)
+#         if create_post_btn:
+#             create_post_btn.click()
+#             time.sleep(5) 
+#             dialog_box = page.ele('xpath://div[@role="dialog"]', timeout=3)
+#             if not dialog_box:
+#                 create_post_btn.click(by_js=True)
+#                 time.sleep(4)
+        
+#         text_box = page.ele('xpath://div[@role="dialog"]//div[@role="textbox" and @contenteditable="true"]', timeout=5)
+#         if text_box:
+#             text_to_post = get_dynamic_message(loop_counter)
+#             text_box.input(text_to_post)
+#             print(f"✅ Text type ho gaya.")
+#             time.sleep(3)
+
+#         print(f"▶️ STEP 3: {len(images_to_upload)} photos attach kar rahe hain...")
+#         photo_icon = page.ele('xpath://div[@role="dialog"]//div[@aria-label="Photo/video"]', timeout=5)
+#         if photo_icon:
+#             page.set.upload_files(images_to_upload)
+#             photo_icon.click(by_js=True)
+#             print(f"✅ Photos secretly attached (No Pop-up)! Upload hone ka wait kar rahe hain...")
+#             time.sleep(15) 
+
+#         print("▶️ STEP 4: Next button check kar rahe hain...")
+#         next_btn = page.ele('css:div[aria-label="Next"][role="button"]', timeout=3)
+#         if next_btn:
+#             print("✅ Next button mil gaya, click kar rahe hain...")
+#             next_btn.click(by_js=True)
+#             time.sleep(4)
+
+#         print("▶️ STEP 5: Final Post button check...")
+#         post_btn = page.ele('xpath://div[@aria-label="Post" and @role="button"]', timeout=5) or \
+#                    page.ele('xpath://span[text()="Post"]/ancestor::div[@role="button"]', timeout=5) or \
+#                    page.ele('xpath://span[text()="Post"]', timeout=5)
+        
+#         if post_btn:
+#             try:
+#                 post_btn.click()
+#             except:
+#                 post_btn.click(by_js=True)
+#             print("✅ Post button clicked! Waiting to see if any popups intercept...")
+#             time.sleep(5) 
+#         else:
+#             print("❌ ERROR: Post button disabled or not found! Skipping cycle.")
+#             raise Exception("Post button not found or not clickable")
+
+#         print("🕵️‍♂️ Hunting for intercepting popups...")
+#         for i in range(3):
+#             time.sleep(2)
+            
+#             publish_original_btn = page.ele('xpath://span[text()="Publish Original Post"]', timeout=2) or \
+#                                    page.ele('text:Publish Original Post', timeout=1)
+#             if publish_original_btn:
+#                 print("🎯 'Event' popup detected! Forcing 'Publish Original Post'...")
+#                 publish_original_btn.click(by_js=True)
+#                 time.sleep(5)
+#                 continue
+                
+#             popup_close_btn = page.ele('css:div[aria-label="Close"][role="button"]', timeout=2)
+#             if popup_close_btn:
+#                 print("🎯 Standard 'Close' popup detected! Clicking 'X'...")
+#                 popup_close_btn.click(by_js=True)
+#                 time.sleep(3)
+#                 continue
+
+#             try:
+#                 page.run_js('document.elementFromPoint(10, 150).click();')
+#             except:
+#                 pass
+
+#         print("▶️ STEP 6: Share Now check...")
+#         share_now_btn = page.ele('css:div[aria-label="Share now"][role="button"]', timeout=3) or page.ele('xpath://span[text()="Share now" or text()="Publish" or text()="Share"]', timeout=2)
+#         if share_now_btn:
+#             share_now_btn.click(by_js=True)
+#             time.sleep(8)
+            
+#         print(f"🎉 BINGO! Post Cycle #{loop_counter} Complete.")
+        
+#         try:
+#              page.run_js('document.body.click();')
+#         except:
+#              pass
+
+#         print("🔄 Cycle complete. Agle cycle ke liye wapas Homepage par ja rahe hain...")
+#         page.get("https://www.facebook.com/")
+#         time.sleep(3)
+             
+#         return "success"
+        
+#     except Exception as e:
+#         print(f"⚠️ HOUSTON, MAIN PROBLEM: {e}")
+#         try:
+#             page.refresh()
+#             time.sleep(5)
+#         except:
+#             pass
+#         return "general_error"
+
+# # ==========================================
+# # 🔄 MAIN INFINITE LOOP (Limit to 5h 50m)
+# # ==========================================
+# if __name__ == "__main__":
+#     start_time = datetime.now()
+#     max_duration = timedelta(hours=5, minutes=50) 
+    
+#     print("🚀 Script Start... Browser khul raha hai...")
+#     co = ChromiumOptions()
+#     co.set_argument('--no-sandbox')
+#     co.set_argument('--disable-dev-shm-usage')
+#     co.set_argument('--window-size=1920,1080')
+#     co.set_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+#     co.set_argument('--test-type') 
+#     co.set_argument('--disable-infobars') 
+#     co.set_argument('--disable-blink-features=AutomationControlled') 
+#     co.set_argument('--password-store=basic')
+#     co.set_argument('--disable-notifications') 
+    
+#     page = ChromiumPage(co)
+    
+#     if not initial_login(page):
+#         print("🛑 Login fail ho gaya. Script exit kar rahi hai.")
+#         page.quit()
+#         sys.exit(1)
+
+#     loop_counter = 1
+#     timeout_fails = 0 
+    
+#     try:
+#         while True:
+#             current_time = datetime.now()
+#             elapsed_time = current_time - start_time
+            
+#             if elapsed_time >= max_duration:
+#                 print(f"\n⏳ 5 Ghante aur 50 Minute poore ho gaye. Graceful shutdown shuru...")
+#                 break 
+                
+#             print(f"\n{'='*50}")
+#             print(f"🔄 POST CYCLE NUMBER: {loop_counter}")
+#             print(f"⏱️ Time Running: {str(elapsed_time).split('.')[0]}")
+#             print(f"{'='*50}")
+            
+#             status = run_single_post_cycle(page, loop_counter)
+            
+#             if status == "critical_error":
+#                 print("🛑 Critical Error. Script completely stopped.")
+#                 sys.exit(1) 
+                
+#             elif status == "timeout_error":
+#                 timeout_fails += 1
+#                 print(f"⚠️ Warning: Post box nahi mila. Lagatar fail count: {timeout_fails}/3")
+#                 if timeout_fails >= 3:
+#                     print("🛑 3 DAFA FAIL HO GAYA: Action ko band kiya ja raha hai taake Facebook block na kare!")
+#                     sys.exit(1) 
+#             else:
+#                 timeout_fails = 0
+                
+#             wait_seconds = random.randint(90, 120)
+#             mins, secs = divmod(wait_seconds, 60)
+            
+#             print(f"\n⏳ Agli post theek {mins} minute aur {secs} second ke baad hogi.")
+#             time.sleep(wait_seconds)
+            
+#             loop_counter += 1
+            
+#     finally:
+#         print("\nBrowser permanently band kar rahe hain...")
+#         try:
+#             if page.wait.alert(timeout=2):
+#                 page.handle_alert(accept=True)
+#         except:
+#             pass 
+            
+#         page.quit()
+#         os.system("pkill chrome")
+#         print("✅ Script successfully 6-hour limit ke qareeb ruk gayi. Goodbye!")
 
 
 
